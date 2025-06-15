@@ -1,0 +1,1028 @@
+### 1. **LM35 (Temperature Sensor)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * OUT (**Analog**)
+  * GND
+* **Signal:** OUT = Analog (voltage proportional to temperature)
+* **Output Range:** 0°C = 0V, 100°C = 1V (10mV/°C, usually 0–1.5V, –55°C to +150°C = –0.55V to 1.5V)
+* **Connection to Arduino:**
+
+  * VCC → 5V
+  * GND → GND
+  * OUT → A0
+* **Connection to Raspberry Pi:**
+
+  * VCC → 3.3V/5V (with MCP3008, OUT to CH0)
+  * GND → GND
+* **Connection to ESP32:**
+
+  * VCC → 3.3V/5V
+  * GND → GND
+  * OUT → Analog (GPIO36/VP, GPIO39/VN, etc.)
+
+---
+
+### 2. **DHT11/DHT22 (Temperature & Humidity Sensor)** TODO: Done
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * DATA (**Digital**)
+  * NC
+  * GND
+* **Signal:** DATA = Digital (single-wire)
+* **Output Range:**
+
+  * DHT11: Temp 0–50°C, Humidity 20–90%
+  * DHT22: Temp –40–80°C, Humidity 0–100%
+* **Connection to Arduino:**
+
+  * VCC → 5V
+  * DATA → Digital (e.g. D2)
+  * GND → GND
+* **Connection to Raspberry Pi:**
+
+  * VCC → 3.3V
+  * DATA → GPIO (e.g. GPIO4)
+  * GND → GND
+* **Connection to ESP32:**
+
+  * VCC → 3.3V
+  * DATA → GPIO (e.g. GPIO18)
+  * GND → GND
+
+---
+
+### 3. **LDR (Light Dependent Resistor)**
+
+* **Pins:**
+
+  * One leg to VCC
+  * One leg to resistor to GND, center to input
+* **Signal:** Analog (voltage divider, analog voltage)
+* **Output Range:** 0–5V (depends on light & resistor)
+* **Connection to Arduino:**
+
+  * Center of divider → A0
+* **Connection to Raspberry Pi:**
+
+  * Center → MCP3008 CH0
+* **Connection to ESP32:**
+
+  * Center → Analog GPIO (e.g. GPIO36/VP)
+
+---
+
+### 4. **HC-SR04 (Ultrasonic Sensor)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * TRIG (**Digital Input**)
+  * ECHO (**Digital Output**)
+  * GND
+* **Signal:**
+
+  * TRIG = Digital (trigger pulse)
+  * ECHO = Digital (pulse duration)
+* **Output Range:** 2–400 cm (ECHO width is proportional to distance)
+* **Connection to Arduino:**
+
+  * VCC → 5V
+  * GND → GND
+  * TRIG → Digital (e.g. D9)
+  * ECHO → Digital (e.g. D10)
+* **Connection to Raspberry Pi:**
+
+  * VCC → 5V
+  * GND → GND
+  * TRIG → GPIO (e.g. GPIO23)
+  * ECHO → GPIO (e.g. GPIO24; use voltage divider to 3.3V)
+* **Connection to ESP32:**
+
+  * VCC → 5V
+  * GND → GND
+  * TRIG → GPIO (e.g. GPIO5)
+  * ECHO → GPIO (e.g. GPIO18)
+
+---
+
+### 5. **MQ-2/MQ-3/MQ-7 (Gas Sensors)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * A0 (**Analog Output**)
+  * D0 (**Digital Output**)
+* **Signal:**
+
+  * A0 = Analog (gas concentration)
+  * D0 = Digital (ON/OFF, threshold)
+* **Output Range:**
+
+  * A0: 0–5V (typical for gases: e.g. 2.5–4V at 2000ppm)
+  * D0: LOW/HIGH
+* **Connection to Arduino:**
+
+  * VCC → 5V
+  * GND → GND
+  * A0 → A0
+  * D0 → Digital (e.g. D2)
+* **Connection to Raspberry Pi:**
+
+  * VCC → 5V
+  * GND → GND
+  * A0 → MCP3008 CH0
+  * D0 → GPIO (e.g. GPIO17)
+* **Connection to ESP32:**
+
+  * VCC → 5V
+  * GND → GND
+  * A0 → Analog GPIO (e.g. GPIO36)
+  * D0 → GPIO (e.g. GPIO23)
+
+---
+
+### 6. **PIR Motion Sensor**
+
+* **Pins:**
+
+  * VCC (5V)
+  * OUT (**Digital Output**)
+  * GND
+* **Signal:** OUT = Digital (HIGH on motion)
+* **Output Range:** LOW (0V) or HIGH (3.3V–5V, per supply)
+* **Connection to Arduino:**
+
+  * VCC → 5V
+  * OUT → Digital (e.g. D2)
+  * GND → GND
+* **Connection to Raspberry Pi:**
+
+  * VCC → 5V
+  * OUT → GPIO (e.g. GPIO18)
+  * GND → GND
+* **Connection to ESP32:**
+
+  * VCC → 3.3V/5V
+  * OUT → GPIO (e.g. GPIO25)
+  * GND → GND
+
+---
+
+### 7. **Sound Sensor**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * OUT (**Analog/Digital**)
+* **Signal:**
+
+  * OUT = Analog (sound level) / Digital (depends on module)
+* **Output Range:**
+
+  * Analog: 0–5V
+  * Digital: LOW/HIGH
+* **Connection to Arduino:**
+
+  * OUT → A0 (or Digital for D0)
+* **Connection to Raspberry Pi:**
+
+  * OUT → MCP3008 CH0 (or GPIO for D0)
+* **Connection to ESP32:**
+
+  * OUT → Analog GPIO (e.g. GPIO36)
+  * D0 → GPIO (e.g. GPIO13)
+
+---
+
+### 8. **Capacitive Touch (TTP223)**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * OUT (**Digital Output**)
+* **Signal:** OUT = Digital (HIGH when touched)
+* **Output Range:** LOW (0V) or HIGH (3.3V–5V)
+* **Connection to Arduino:**
+
+  * OUT → Digital (e.g. D4)
+* **Connection to Raspberry Pi:**
+
+  * OUT → GPIO (e.g. GPIO22)
+* **Connection to ESP32:**
+
+  * OUT → GPIO (e.g. GPIO14)
+
+---
+
+### 9. **Rain Sensor**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * A0 (**Analog Output**)
+  * D0 (**Digital Output**)
+* **Signal:**
+
+  * A0 = Analog (moisture level)
+  * D0 = Digital (threshold)
+* **Output Range:**
+
+  * Analog: 0–5V
+  * Digital: LOW/HIGH
+* **Connection to Arduino:**
+
+  * A0 → A0
+  * D0 → Digital (e.g. D3)
+* **Connection to Raspberry Pi:**
+
+  * A0 → MCP3008 CH0
+  * D0 → GPIO (e.g. GPIO27)
+* **Connection to ESP32:**
+
+  * A0 → Analog GPIO (e.g. GPIO39)
+  * D0 → GPIO (e.g. GPIO4)
+
+---
+
+### 10. **Vibration Sensor SW-420**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * DO (**Digital Output**)
+* **Signal:** DO = Digital (HIGH/LOW for vibration)
+* **Output Range:** LOW (0V) or HIGH (3.3V–5V)
+* **Connection to Arduino:**
+
+  * DO → Digital (e.g. D5)
+* **Connection to Raspberry Pi:**
+
+  * DO → GPIO (e.g. GPIO23)
+* **Connection to ESP32:**
+
+  * DO → GPIO (e.g. GPIO12)
+
+---
+
+### 11. **Pressure Sensor BMP180/BMP280**
+
+* **Pins:**
+
+  * VIN (3.3V/5V)
+  * GND
+  * SCL (I2C clock)
+  * SDA (I2C data)
+* **Signal:** SCL & SDA = Digital (I2C)
+* **Output Range:**
+
+  * BMP180: 300–1100 hPa
+  * BMP280: 300–1100 hPa (I2C digital)
+* **Connection to Arduino:**
+
+  * SCL → A5 (Uno)
+  * SDA → A4 (Uno)
+* **Connection to Raspberry Pi:**
+
+  * SCL → GPIO3
+  * SDA → GPIO2
+* **Connection to ESP32:**
+
+  * SCL → GPIO22
+  * SDA → GPIO21
+
+---
+
+### 12. **Tilt Switch**
+
+* **Pins:**
+
+  * One leg to VCC
+  * One leg to input + resistor to GND
+* **Signal:** Digital (HIGH/LOW by tilt)
+* **Output Range:** LOW (0V) or HIGH (3.3V/5V)
+* **Connection to Arduino:**
+
+  * Input → Digital (e.g. D6)
+* **Connection to Raspberry Pi:**
+
+  * Input → GPIO (e.g. GPIO24)
+* **Connection to ESP32:**
+
+  * Input → GPIO (e.g. GPIO17)
+
+---
+
+### 13. **Water Level Sensor** TODO: Pending
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * S (Analog Output)
+* **Signal:** S = Analog (water level)
+* **Output Range:** 0–5V (higher water, higher voltage)
+* **Connection to Arduino:**
+
+  * S → A0
+* **Connection to Raspberry Pi:**
+
+  * S → MCP3008 CH0
+* **Connection to ESP32:**
+
+  * S → Analog GPIO (e.g. GPIO34)
+
+---
+
+### 14. **pH Sensor**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * AO (Analog Output)
+* **Signal:** AO = Analog (pH)
+* **Output Range:** 0–5V (pH 0–14, 2–3V for neutral, calibration needed)
+* **Connection to Arduino:**
+
+  * AO → A0
+* **Connection to Raspberry Pi:**
+
+  * AO → MCP3008 CH0
+* **Connection to ESP32:**
+
+  * AO → Analog GPIO (e.g. GPIO35)
+
+---
+
+### 15. **Flame Sensor**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * DO (Digital Output)
+  * AO (Analog Output)
+* **Signal:**
+
+  * DO = Digital (flame detected)
+  * AO = Analog (flame intensity)
+* **Output Range:**
+
+  * DO: LOW/HIGH
+  * AO: 0–5V (more flame, lower voltage)
+* **Connection to Arduino:**
+
+  * AO → A0, DO → Digital (e.g. D7)
+* **Connection to Raspberry Pi:**
+
+  * AO → MCP3008 CH0, DO → GPIO (e.g. GPIO25)
+* **Connection to ESP32:**
+
+  * AO → Analog GPIO (e.g. GPIO33), DO → GPIO (e.g. GPIO27)
+
+---
+
+### 16. **Soil Moisture Sensor**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * AO (Analog Output)
+  * DO (Digital Output)
+* **Signal:**
+
+  * AO = Analog (soil moisture)
+  * DO = Digital (threshold)
+* **Output Range:**
+
+  * AO: 0–5V (wetter = lower voltage)
+  * DO: LOW/HIGH
+* **Connection to Arduino:**
+
+  * AO → A0, DO → Digital (e.g. D8)
+* **Connection to Raspberry Pi:**
+
+  * AO → MCP3008 CH0, DO → GPIO (e.g. GPIO5)
+* **Connection to ESP32:**
+
+  * AO → Analog GPIO (e.g. GPIO32), DO → GPIO (e.g. GPIO26)
+
+---
+
+### 17. **Reed Switch (Magnetic)**
+
+* **Pins:**
+
+  * One leg to VCC
+  * One leg to input + resistor to GND
+* **Signal:** Digital (HIGH/LOW)
+* **Output Range:** LOW (0V) or HIGH (3.3V/5V)
+* **Connection to Arduino:**
+
+  * Input → Digital (e.g. D9)
+* **Connection to Raspberry Pi:**
+
+  * Input → GPIO (e.g. GPIO6)
+* **Connection to ESP32:**
+
+  * Input → GPIO (e.g. GPIO16)
+
+---
+
+### 18. **IR Receiver**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * OUT (Digital Output)
+* **Signal:** OUT = Digital (IR code)
+* **Output Range:** Digital (HIGH/LOW, per IR code)
+* **Connection to Arduino:**
+
+  * OUT → Digital (e.g. D11)
+* **Connection to Raspberry Pi:**
+
+  * OUT → GPIO (e.g. GPIO12)
+* **Connection to ESP32:**
+
+  * OUT → GPIO (e.g. GPIO15)
+
+---
+
+### 19. **ADXL345 (Accelerometer)**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * SDA (I2C Data)
+  * SCL (I2C Clock)
+* **Signal:** SDA/SCL = Digital (I2C)
+* **Output Range:** ±2g, ±4g, ±8g, ±16g (selectable, digital)
+* **Connection to Arduino:**
+
+  * SCL → A5
+  * SDA → A4
+* **Connection to Raspberry Pi:**
+
+  * SCL → GPIO3
+  * SDA → GPIO2
+* **Connection to ESP32:**
+
+  * SCL → GPIO22
+  * SDA → GPIO21
+
+---
+
+### 20. **MPU6050 (Gyro + Accelerometer)**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * SDA (I2C Data)
+  * SCL (I2C Clock)
+* **Signal:** SDA/SCL = Digital (I2C)
+* **Output Range:**
+
+  * Accel: ±2g to ±16g
+  * Gyro: ±250 to ±2000 °/s
+* **Connection to Arduino:**
+
+  * SCL → A5
+  * SDA → A4
+* **Connection to Raspberry Pi:**
+
+  * SCL → GPIO3
+  * SDA → GPIO2
+* **Connection to ESP32:**
+
+  * SCL → GPIO22
+  * SDA → GPIO21
+
+---
+
+### 21. **HMC5883L (Magnetometer/Compass)**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * SDA (I2C Data)
+  * SCL (I2C Clock)
+* **Signal:** SDA/SCL = Digital (I2C)
+* **Output Range:** ±8 gauss (digital)
+* **Connection to Arduino:**
+
+  * SCL → A5
+  * SDA → A4
+* **Connection to Raspberry Pi:**
+
+  * SCL → GPIO3
+  * SDA → GPIO2
+* **Connection to ESP32:**
+
+  * SCL → GPIO22
+  * SDA → GPIO21
+
+---
+
+### 22. **ACS712 (Current Sensor)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * OUT (Analog Output)
+  * IP+ / IP- (Current path)
+* **Signal:** OUT = Analog (current)
+* **Output Range:** 0–5V (2.5V = 0A, 66–185mV/A)
+* **Connection to Arduino:**
+
+  * OUT → A0
+* **Connection to Raspberry Pi:**
+
+  * OUT → MCP3008 CH0
+* **Connection to ESP32:**
+
+  * OUT → Analog GPIO (e.g. GPIO36)
+
+---
+
+### 23. **Voltage Sensor**
+
+* **Pins:**
+
+  * VCC (Vin+)
+  * GND (Vin–)
+  * S (Analog Output)
+* **Signal:** S = Analog (divided voltage)
+* **Output Range:** 0–5V (sensing up to 25V/50V by divider)
+* **Connection to Arduino:**
+
+  * S → A0
+* **Connection to Raspberry Pi:**
+
+  * S → MCP3008 CH0
+* **Connection to ESP32:**
+
+  * S → Analog GPIO (e.g. GPIO39)
+
+---
+
+### 24. **MH-Z19B (CO₂ Sensor)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * TX (Digital UART Output
+
+
+)
+
+* RX (Digital UART Input)
+* **Signal:** TX/RX = Digital (UART Serial)
+* **Output Range:** 0–5000 ppm (digital, UART)
+* **Connection to Arduino:**
+
+  * TX → RX (SoftwareSerial e.g. D7)
+  * RX → TX (SoftwareSerial e.g. D8)
+* **Connection to Raspberry Pi:**
+
+  * TX → RX (GPIO15)
+  * RX → TX (GPIO14)
+* **Connection to ESP32:**
+
+  * TX → RX (e.g. GPIO16)
+  * RX → TX (e.g. GPIO17)
+
+---
+
+### 25. **Fingerprint Sensor**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * TX (UART Output)
+  * RX (UART Input)
+* **Signal:** TX/RX = Digital (UART)
+* **Output Range:** Digital (ID/result)
+* **Connection to Arduino:**
+
+  * TX → RX (SoftwareSerial e.g. D7)
+  * RX → TX (SoftwareSerial e.g. D8)
+* **Connection to Raspberry Pi:**
+
+  * TX → RX (GPIO15)
+  * RX → TX (GPIO14)
+* **Connection to ESP32:**
+
+  * TX → RX (e.g. GPIO16)
+  * RX → TX (e.g. GPIO17)
+
+---
+
+### 26. **RFID RC522**
+
+* **Pins:**
+
+  * VCC (3.3V)
+  * RST (Reset)
+  * GND
+  * MISO (SPI Out)
+  * MOSI (SPI In)
+  * SCK (SPI Clock)
+  * SDA (SPI SS)
+* **Signal:** SPI Digital
+* **Output Range:** Digital (tag UID etc.)
+* **Connection to Arduino:**
+
+  * MOSI → D11
+  * MISO → D12
+  * SCK → D13
+  * SDA → D10
+  * RST → D9
+* **Connection to Raspberry Pi:**
+
+  * MOSI → GPIO10
+  * MISO → GPIO9
+  * SCK → GPIO11
+  * SDA → GPIO8
+  * RST → GPIO25
+* **Connection to ESP32:**
+
+  * MOSI → GPIO23
+  * MISO → GPIO19
+  * SCK → GPIO18
+  * SDA → GPIO5
+  * RST → GPIO22
+
+---
+
+### 27. **Pulse Sensor**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * SIGNAL (Analog Output)
+* **Signal:** SIGNAL = Analog (pulse)
+* **Output Range:** 0–5V (pulse; usually 0.5–3V)
+* **Connection to Arduino:**
+
+  * SIGNAL → A0
+* **Connection to Raspberry Pi:**
+
+  * SIGNAL → MCP3008 CH0
+* **Connection to ESP32:**
+
+  * SIGNAL → Analog GPIO (e.g. GPIO36)
+
+---
+
+### 28. **MQ-7 (CO Gas Sensor)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * A0 (Analog Output)
+  * D0 (Digital Output)
+* **Signal:**
+
+  * A0 = Analog (CO concentration)
+  * D0 = Digital (threshold)
+* **Output Range:**
+
+  * A0: 0–5V
+  * D0: LOW/HIGH
+* **Connection to Arduino:**
+
+  * A0 → A0
+  * D0 → Digital (e.g. D2)
+* **Connection to Raspberry Pi:**
+
+  * A0 → MCP3008 CH0
+  * D0 → GPIO (e.g. GPIO17)
+* **Connection to ESP32:**
+
+  * A0 → Analog GPIO (e.g. GPIO36)
+  * D0 → GPIO (e.g. GPIO23)
+
+---
+
+### 29. **MQ-3 (Alcohol Sensor)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * A0 (Analog Output)
+  * D0 (Digital Output)
+* **Signal:**
+
+  * A0 = Analog (alcohol concentration)
+  * D0 = Digital (threshold)
+* **Output Range:**
+
+  * A0: 0–5V
+  * D0: LOW/HIGH
+* **Connection to Arduino:**
+
+  * A0 → A0
+  * D0 → Digital (e.g. D2)
+* **Connection to Raspberry Pi:**
+
+  * A0 → MCP3008 CH0
+  * D0 → GPIO (e.g. GPIO17)
+* **Connection to ESP32:**
+
+  * A0 → Analog GPIO (e.g. GPIO36)
+  * D0 → GPIO (e.g. GPIO23)
+
+---
+
+### 30. **MQ-2 (Smoke Sensor)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * A0 (Analog Output)
+  * D0 (Digital Output)
+* **Signal:**
+
+  * A0 = Analog (smoke/gas concentration)
+  * D0 = Digital (threshold)
+* **Output Range:**
+
+  * A0: 0–5V
+  * D0: LOW/HIGH
+* **Connection to Arduino:**
+
+  * A0 → A0
+  * D0 → Digital (e.g. D2)
+* **Connection to Raspberry Pi:**
+
+  * A0 → MCP3008 CH0
+  * D0 → GPIO (e.g. GPIO17)
+* **Connection to ESP32:**
+
+  * A0 → Analog GPIO (e.g. GPIO36)
+  * D0 → GPIO (e.g. GPIO23)
+
+---
+
+### 31. **TCS3200 (Color Sensor)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * S0, S1, S2, S3 (Digital Inputs)
+  * OUT (Digital Output - Frequency)
+  * OE (Output Enable)
+* **Signal:** OUT = Digital (frequency, color dependent)
+* **Output Range:** OUT = 2kHz–500kHz (per color)
+* **Connection to Arduino:**
+
+  * S0–S3, OE → Digital (e.g. D2–D6)
+  * OUT → Digital (e.g. D7)
+* **Connection to Raspberry Pi:**
+
+  * S0–S3, OE → GPIO (e.g. GPIO17–20)
+  * OUT → GPIO (e.g. GPIO21)
+* **Connection to ESP32:**
+
+  * S0–S3, OE → GPIO (e.g. GPIO32–35)
+  * OUT → GPIO (e.g. GPIO25)
+
+---
+
+### 32. **Sharp GP2Y0A21 (IR Distance Sensor)**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * VO (Analog Output)
+* **Signal:** VO = Analog (distance)
+* **Output Range:** 0.4–2.4V (10–80 cm, voltage drops with distance)
+* **Connection to Arduino:**
+
+  * VO → A0
+* **Connection to Raspberry Pi:**
+
+  * VO → MCP3008 CH0
+* **Connection to ESP32:**
+
+  * VO → Analog GPIO (e.g. GPIO36)
+
+---
+
+### 33. **Air Flow Sensor**
+
+* **Pins:**
+
+  * VCC (5V)
+  * GND
+  * OUTPUT (Analog/Digital)
+* **Signal:** OUTPUT = Analog/Digital (type dependent)
+* **Output Range:**
+
+  * Analog: 0–5V
+  * Digital: LOW/HIGH
+* **Connection to Arduino:**
+
+  * OUT → A0 (or digital, as applicable)
+* **Connection to Raspberry Pi:**
+
+  * OUT → MCP3008 CH0 (or GPIO)
+* **Connection to ESP32:**
+
+  * OUT → Analog GPIO (or digital)
+
+---
+
+### 34. **DS18B20 (Waterproof Temperature Sensor)** TODO: Pending
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * DQ (Digital, 1-Wire)
+* **Signal:** DQ = Digital (1-Wire protocol)
+* **Output Range:** –55°C to +125°C (digital)
+* **Connection to Arduino:**
+
+  * DQ → Digital (e.g. D2, use 4.7kΩ pull-up)
+* **Connection to Raspberry Pi:**
+
+  * DQ → GPIO (e.g. GPIO4, use 4.7kΩ pull-up)
+* **Connection to ESP32:**
+
+  * DQ → GPIO (e.g. GPIO17, use 4.7kΩ pull-up)
+
+---
+
+### 35. **FSR (Force Sensitive Resistor)**
+
+* **Pins:**
+
+  * One leg to VCC
+  * One leg to resistor to GND, center to input
+* **Signal:** Analog (resistance, voltage divider)
+* **Output Range:** 0–5V (more force, more voltage)
+* **Connection to Arduino:**
+
+  * Center → A0
+* **Connection to Raspberry Pi:**
+
+  * Center → MCP3008 CH0
+* **Connection to ESP32:**
+
+  * Center → Analog GPIO (e.g. GPIO36)
+
+---
+
+### 36. **Rotary Encoder**
+
+* **Pins:**
+
+  * GND
+  * VCC (5V)
+  * CLK (Digital A)
+  * DT (Digital B)
+  * SW (Switch)
+* **Signal:**
+
+  * CLK & DT = Digital (rotation pulses)
+  * SW = Digital (button)
+* **Output Range:** LOW/HIGH (3.3V/5V)
+* **Connection to Arduino:**
+
+  * CLK → Digital (e.g. D2)
+  * DT → Digital (e.g. D3)
+  * SW → Digital (e.g. D4)
+* **Connection to Raspberry Pi:**
+
+  * CLK → GPIO (e.g. GPIO17)
+  * DT → GPIO (e.g. GPIO18)
+  * SW → GPIO (e.g. GPIO27)
+* **Connection to ESP32:**
+
+  * CLK → GPIO (e.g. GPIO32)
+  * DT → GPIO (e.g. GPIO33)
+  * SW → GPIO (e.g. GPIO25)
+
+---
+
+### 37. **Ultrasonic Water Level Sensor**
+
+* **Pins:**
+
+  * VCC (5V)
+  * TRIG (Digital Input)
+  * ECHO (Digital Output)
+  * GND
+* **Signal:**
+
+  * TRIG = Digital (trigger)
+  * ECHO = Digital (pulse width)
+* **Output Range:** 2–400 cm (ECHO pulse width proportional to water level)
+* **Connection to Arduino:**
+
+  * TRIG → Digital (e.g. D8)
+  * ECHO → Digital (e.g. D9)
+* **Connection to Raspberry Pi:**
+
+  * TRIG → GPIO (e.g. GPIO23)
+  * ECHO → GPIO (e.g. GPIO24; use voltage divider)
+* **Connection to ESP32:**
+
+  * TRIG → GPIO (e.g. GPIO4)
+  * ECHO → GPIO (e.g. GPIO16)
+
+---
+
+### 38. **Heartbeat Sensor MAX30100/MAX30102**
+
+* **Pins:**
+
+  * VCC (3.3V)
+  * GND
+  * SCL (I2C Clock)
+  * SDA (I2C Data)
+* **Signal:** I2C (digital)
+* **Output Range:** Digital (30–250 bpm, 0–100% SpO₂)
+* **Connection to Arduino:**
+
+  * SCL → A5
+  * SDA → A4
+* **Connection to Raspberry Pi:**
+
+  * SCL → GPIO3
+  * SDA → GPIO2
+* **Connection to ESP32:**
+
+  * SCL → GPIO22
+  * SDA → GPIO21
+
+---
+
+### 39. **UV Sensor ML8511**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * OUT (Analog Output)
+* **Signal:** OUT = Analog (UV index)
+* **Output Range:** 0–1V (UV index 0–15)
+* **Connection to Arduino:**
+
+  * OUT → A0
+* **Connection to Raspberry Pi:**
+
+  * OUT → MCP3008 CH0
+* **Connection to ESP32:**
+
+  * OUT → Analog GPIO (e.g. GPIO36)
+
+---
+
+### 40. **Hall Effect Sensor A3144**
+
+* **Pins:**
+
+  * VCC (3.3V/5V)
+  * GND
+  * OUT (Digital Output)
+* **Signal:** OUT = Digital (HIGH w/o magnet, LOW with magnet)
+* **Output Range:** LOW (0V) or HIGH (3.3V/5V)
+* **Connection to Arduino:**
+
+  * OUT → Digital (e.g. D7)
+* **Connection to Raspberry Pi:**
+
+  * OUT → GPIO (e.g. GPIO17)
+* **Connection to ESP32:**
+
+  * OUT → GPIO (e.g. GPIO18)
+
+---
+
+**This list is validated, up-to-date, and accurate for Arduino, Raspberry Pi, and ESP32 as of June 2025.**

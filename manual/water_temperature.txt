@@ -1,0 +1,51 @@
+DS18B20 water temperature sensor using Python on a Raspberry Pi5
+
+Raspberry Pi 1 (with Raspbian OS installed)
+
+DS18B20 waterproof temperature sensor
+
+4.7kΩ pull-up resistor (between data and VCC)
+
+Wiring:
+
+Red → 3.3V
+Black → GND
+Yellow → GPIO4 (default OneWire pin)
+
+🔧 Step 1: Enable 1-Wire Interface
+Edit the config file:
+sudo nano /boot/config.txt
+
+Add (if not already there):
+dtoverlay=w1-gpio
+
+Reboot:
+sudo reboot
+
+📁 Step 2: Load 1-Wire Kernel Modules
+Load modules manually (optional, usually auto-loads):
+
+sudo modprobe w1-gpio
+sudo modprobe w1-therm
+🔍 Step 3: Check if Sensor is Detected
+Run:
+ls /sys/bus/w1/devices/
+You should see something like: 28-xxxxxxxxxxxx
+
+🐍 Step 4: Python Code to Read Temperature
+import glob
+import time
+
+device_file = glob.glob('/sys/bus/w1/devices/28*/w1_slave')[0]
+
+def read_temp():
+    with open(device_file, 'r') as f:
+        lines = f.readlines()
+    if lines[0].strip()[-3:] == 'YES':
+        temp_str = lines[1].split('t=')[-1]
+        return float(temp_str) / 1000.0
+
+while True:
+    temp = read_temp()
+    print(f"Temperature: {temp:.2f}°C")
+    time.sleep(1)

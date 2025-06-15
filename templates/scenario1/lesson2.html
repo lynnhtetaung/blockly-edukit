@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DS18B20 Sensor Blockly Generator</title>
+
+  <!-- Load Blockly Core & Dependencies -->
+  <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
+  <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+  <script src="https://unpkg.com/blockly/python_compressed.js"></script>
+  <script src="https://unpkg.com/blockly/msg/en.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      backdrop-filter: blur(10px);
+    }
+    #blocklyDiv {
+      height: 600px;
+      width: 100%;
+      border: 3px solid #667eea;
+      margin-bottom: 1rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+    }
+    .output-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-top: 25px;
+    }
+    .output-section {
+      flex: 1;
+    }
+    .output-section h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #2d3748;
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+    pre {
+      background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      color: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+      min-height: 150px;
+      margin: 0;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+      border: 1px solid #4a5568;
+    }
+    .execution-output {
+      background: linear-gradient(135deg, #1a202c 0%, #0d1117 100%);
+      color: #68d391;
+      border: 2px solid #38a169;
+      position: relative;
+      overflow: hidden;
+    }
+    .execution-output::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #68d391, transparent);
+      animation: scan 2s linear infinite;
+    }
+    @keyframes scan {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    button {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-right: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      font-size: 14px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    .load-btn {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+    }
+    .load-btn:hover {
+      box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+    }
+    .run-btn {
+      background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+      box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);
+    }
+    .run-btn:hover {
+      box-shadow: 0 8px 25px rgba(237, 137, 54, 0.4);
+    }
+    .clear-btn {
+      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+      box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+    }
+    .clear-btn:hover {
+      box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
+    }
+    .test-btn {
+      background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+      box-shadow: 0 4px 15px rgba(159, 122, 234, 0.3);
+    }
+    .test-btn:hover {
+      box-shadow: 0 8px 25px rgba(159, 122, 234, 0.4);
+    }
+    h1 {
+      color: #2d3748;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 2.5em;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      text-align: center;
+      color: #718096;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .status-ready {
+      background-color: #48bb78;
+      box-shadow: 0 0 10px rgba(72, 187, 120, 0.5);
+    }
+    .status-running {
+      background-color: #ed8936;
+      animation: pulse 1s infinite;
+      box-shadow: 0 0 10px rgba(237, 137, 54, 0.5);
+    }
+    .status-error {
+      background-color: #e53e3e;
+      box-shadow: 0 0 10px rgba(229, 62, 62, 0.5);
+    }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.1); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 25px 0;
+      justify-content: center;
+    }
+    .sensor-info {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .sensor-info h2 {
+      margin: 0 0 10px 0;
+      color: #667eea;
+      font-size: 1.3em;
+    }
+    .sensor-info p {
+      margin: 5px 0;
+      color: #4a5568;
+    }
+    .method-indicator {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(102, 126, 234, 0.9);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+  </style>
+</head>
+<body>
+
+<div class="method-indicator" id="methodIndicator">Method: Standard + forBlock</div>
+
+<div class="container">
+  <h1>🌡️ DS18B20 Temperature Sensor</h1>
+  <p class="subtitle">1-Wire Digital Temperature Sensor - Enhanced Blockly Code Generator</p>
+
+  <div class="sensor-info">
+    <h2>📊 DS18B20 Sensor Information</h2>
+    <p><strong>Interface:</strong> 1-Wire Digital</p>
+    <p><strong>Accuracy:</strong> ±0.5°C (-10°C to +85°C)</p>
+    <p><strong>Resolution:</strong> 9 to 12 bits (0.5°C to 0.0625°C)</p>
+    <p><strong>File Path:</strong> /sys/bus/w1/devices/28*/w1_slave</p>
+    <p><strong>Generator Methods:</strong> Standard + forBlock (Dual Compatibility)</p>
+  </div>
+
+  <!-- Toolbox -->
+  <xml id="toolbox" style="display: none">
+    <category name="📥 Imports" colour="230">
+      <block type="import_glob"></block>
+      <block type="import_time"></block>
+    </category>
+    <category name="🔍 Device Setup" colour="120">
+      <block type="get_device_file"></block>
+      <block type="define_read_temp_function"></block>
+    </category>
+    <category name="📖 File Operations" colour="160">
+      <block type="open_device_file"></block>
+      <block type="read_lines"></block>
+      <block type="check_crc"></block>
+      <block type="extract_temperature"></block>
+      <block type="convert_temperature"></block>
+    </category>
+    <category name="🔄 Main Loop" colour="65">
+      <block type="while_true_loop"></block>
+      <block type="call_read_temp"></block>
+      <block type="print_temperature"></block>
+      <block type="sleep_delay"></block>
+    </category>
+    <category name="🎯 Complete Code" colour="290">
+      <block type="complete_ds18b20_code"></block>
+    </category>
+    <category name="🧪 Built-in Test" colour="20">
+      <block type="text_print">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">Hello DS18B20!</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text">
+        <field name="TEXT">test message</field>
+      </block>
+    </category>
+  </xml>
+
+  <!-- Blockly Workspace -->
+  <div id="blocklyDiv"></div>
+  
+  <div class="button-container">
+    <button onclick="generateCode()">🐍 Generate Python Code</button>
+    <button onclick="loadExample()" class="load-btn">📝 Load Complete Example</button>
+    <button onclick="clearWorkspace()" class="clear-btn">🗑️ Clear Workspace</button>
+    <button onclick="runCode()" class="run-btn">▶️ Simulate Execution</button>
+  </div>
+
+  <div class="output-container">
+    <div class="output-section">
+      <h3>🐍 Generated Python Code:</h3>
+      <pre id="output">Click "Generate Python Code" to see the result...</pre>
+    </div>
+    <div class="output-section">
+      <h3><span class="status-indicator status-ready" id="statusIndicator"></span>🖥️ Execution Simulation:</h3>
+      <pre id="executionOutput" class="execution-output">Click "Simulate Execution" to run the generated Python code...</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+let workspace;
+let currentCode = '';
+
+// Define custom blocks and generators with dual method support
+function setupCustomBlocks() {
+  console.log('Setting up DS18B20 custom blocks with dual methods...');
+  
+  try {
+    // METHOD 1: Standard Blockly.Python generators
+    
+    // Import glob
+    Blockly.Blocks['import_glob'] = {
+      init: function() {
+        this.appendDummyInput().appendField("import glob");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(230);
+        this.setTooltip("Import glob module for file pattern matching");
+      }
+    };
+    
+    Blockly.Python['import_glob'] = function(block) {
+      return 'import glob\n';
+    };
+
+    // Import time
+    Blockly.Blocks['import_time'] = {
+      init: function() {
+        this.appendDummyInput().appendField("import time");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(230);
+        this.setTooltip("Import time module for delays");
+      }
+    };
+    
+    Blockly.Python['import_time'] = function(block) {
+      return 'import time\n';
+    };
+
+    // Get device file
+    Blockly.Blocks['get_device_file'] = {
+      init: function() {
+        this.appendDummyInput().appendField("device_file = glob.glob('/sys/bus/w1/devices/28*/w1_slave')[0]");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(120);
+        this.setTooltip("Find DS18B20 device file using glob pattern");
+      }
+    };
+    
+    Blockly.Python['get_device_file'] = function(block) {
+      return "device_file = glob.glob('/sys/bus/w1/devices/28*/w1_slave')[0]\n";
+    };
+
+    // Define read_temp function
+    Blockly.Blocks['define_read_temp_function'] = {
+      init: function() {
+        this.appendDummyInput().appendField("def read_temp():");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(120);
+        this.setTooltip("Define the read_temp function");
+      }
+    };
+    
+    Blockly.Python['define_read_temp_function'] = function(block) {
+      return 'def read_temp():\n';
+    };
+
+    // Open device file
+    Blockly.Blocks['open_device_file'] = {
+      init: function() {
+        this.appendDummyInput().appendField("    with open(device_file, 'r') as f:");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(160);
+        this.setTooltip("Open device file for reading");
+      }
+    };
+    
+    Blockly.Python['open_device_file'] = function(block) {
+      return "    with open(device_file, 'r') as f:\n";
+    };
+
+    // Read lines
+    Blockly.Blocks['read_lines'] = {
+      init: function() {
+        this.appendDummyInput().appendField("        lines = f.readlines()");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(160);
+        this.setTooltip("Read all lines from the device file");
+      }
+    };
+    
+    Blockly.Python['read_lines'] = function(block) {
+      return "        lines = f.readlines()\n";
+    };
+
+    // Check CRC
+    Blockly.Blocks['check_crc'] = {
+      init: function() {
+        this.appendDummyInput().appendField("    if lines[0].strip()[-3:] == 'YES':");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(160);
+        this.setTooltip("Check if CRC is valid (YES)");
+      }
+    };
+    
+    Blockly.Python['check_crc'] = function(block) {
+      return "    if lines[0].strip()[-3:] == 'YES':\n";
+    };
+
+    // Extract temperature
+    Blockly.Blocks['extract_temperature'] = {
+      init: function() {
+        this.appendDummyInput().appendField("        temp_str = lines[1].split('t=')[-1]");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(160);
+        this.setTooltip("Extract temperature string from second line");
+      }
+    };
+    
+    Blockly.Python['extract_temperature'] = function(block) {
+      return "        temp_str = lines[1].split('t=')[-1]\n";
+    };
+
+    // Convert temperature
+    Blockly.Blocks['convert_temperature'] = {
+      init: function() {
+        this.appendDummyInput().appendField("        return float(temp_str) / 1000.0");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(160);
+        this.setTooltip("Convert temperature from millidegrees to degrees Celsius");
+      }
+    };
+    
+    Blockly.Python['convert_temperature'] = function(block) {
+      return "        return float(temp_str) / 1000.0\n";
+    };
+
+    // While True loop
+    Blockly.Blocks['while_true_loop'] = {
+      init: function() {
+        this.appendDummyInput().appendField("while True:");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(65);
+        this.setTooltip("Start infinite loop");
+      }
+    };
+    
+    Blockly.Python['while_true_loop'] = function(block) {
+      return 'while True:\n';
+    };
+
+    // Call read_temp
+    Blockly.Blocks['call_read_temp'] = {
+      init: function() {
+        this.appendDummyInput().appendField("    temp = read_temp()");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(65);
+        this.setTooltip("Call read_temp function and store result");
+      }
+    };
+    
+    Blockly.Python['call_read_temp'] = function(block) {
+      return '    temp = read_temp()\n';
+    };
+
+    // Print temperature
+    Blockly.Blocks['print_temperature'] = {
+      init: function() {
+        this.appendDummyInput().appendField('    print(f"Temperature: {temp:.2f}°C")');
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(65);
+        this.setTooltip("Print temperature with 2 decimal places");
+      }
+    };
+    
+    Blockly.Python['print_temperature'] = function(block) {
+      return '    print(f"Temperature: {temp:.2f}°C")\n';
+    };
+
+    // Sleep delay
+    Blockly.Blocks['sleep_delay'] = {
+      init: function() {
+        this.appendDummyInput().appendField("    time.sleep(1)");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(65);
+        this.setTooltip("Wait for 1 second");
+      }
+    };
+    
+    Blockly.Python['sleep_delay'] = function(block) {
+      return '    time.sleep(1)\n';
+    };
+
+    // Complete code block
+    Blockly.Blocks['complete_ds18b20_code'] = {
+      init: function() {
+        this.appendDummyInput().appendField("🎯 Complete DS18B20 Code");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(290);
+        this.setTooltip("Generate complete DS18B20 temperature reading code");
+      }
+    };
+    
+    Blockly.Python['complete_ds18b20_code'] = function(block) {
+      var code = 'import glob\n';
+      code += 'import time\n\n';
+      code += "device_file = glob.glob('/sys/bus/w1/devices/28*/w1_slave')[0]\n\n";
+      code += 'def read_temp():\n';
+      code += "    with open(device_file, 'r') as f:\n";
+      code += '        lines = f.readlines()\n';
+      code += "    if lines[0].strip()[-3:] == 'YES':\n";
+      code += "        temp_str = lines[1].split('t=')[-1]\n";
+      code += '        return float(temp_str) / 1000.0\n\n';
+      code += 'while True:\n';
+      code += '    temp = read_temp()\n';
+      code += '    print(f"Temperature: {temp:.2f}°C")\n';
+      code += '    time.sleep(1)\n';
+      return code;
+    };
+
+    console.log('Standard generators setup complete');
+
+    // METHOD 2: forBlock generators for enhanced compatibility
+    try {
+      if (Blockly.Python.forBlock) {
+        Blockly.Python.forBlock['import_glob'] = function(block) {
+          return 'import glob\n';
+        };
+        
+        Blockly.Python.forBlock['import_time'] = function(block) {
+          return 'import time\n';
+        };
+        
+        Blockly.Python.forBlock['get_device_file'] = function(block) {
+          return "device_file = glob.glob('/sys/bus/w1/devices/28*/w1_slave')[0]\n";
+        };
+        
+        Blockly.Python.forBlock['define_read_temp_function'] = function(block) {
+          return 'def read_temp():\n';
+        };
+        
+        Blockly.Python.forBlock['open_device_file'] = function(block) {
+          return "    with open(device_file, 'r') as f:\n";
+        };
+        
+        Blockly.Python.forBlock['read_lines'] = function(block) {
+          return "        lines = f.readlines()\n";
+        };
+        
+        Blockly.Python.forBlock['check_crc'] = function(block) {
+          return "    if lines[0].strip()[-3:] == 'YES':\n";
+        };
+        
+        Blockly.Python.forBlock['extract_temperature'] = function(block) {
+          return "        temp_str = lines[1].split('t=')[-1]\n";
+        };
+        
+        Blockly.Python.forBlock['convert_temperature'] = function(block) {
+          return "        return float(temp_str) / 1000.0\n";
+        };
+        
+        Blockly.Python.forBlock['while_true_loop'] = function(block) {
+          return 'while True:\n';
+        };
+        
+        Blockly.Python.forBlock['call_read_temp'] = function(block) {
+          return '    temp = read_temp()\n';
+        };
+        
+        Blockly.Python.forBlock['print_temperature'] = function(block) {
+          return '    print(f"Temperature: {temp:.2f}°C")\n';
+        };
+        
+        Blockly.Python.forBlock['sleep_delay'] = function(block) {
+          return '    time.sleep(1)\n';
+        };
+        
+        Blockly.Python.forBlock['complete_ds18b20_code'] = function(block) {
+          var code = 'import glob\n';
+          code += 'import time\n\n';
+          code += "device_file = glob.glob('/sys/bus/w1/devices/28*/w1_slave')[0]\n\n";
+          code += 'def read_temp():\n';
+          code += "    with open(device_file, 'r') as f:\n";
+          code += '        lines = f.readlines()\n';
+          code += "    if lines[0].strip()[-3:] == 'YES':\n";
+          code += "        temp_str = lines[1].split('t=')[-1]\n";
+          code += '        return float(temp_str) / 1000.0\n\n';
+          code += 'while True:\n';
+          code += '    temp = read_temp()\n';
+          code += '    print(f"Temperature: {temp:.2f}°C")\n';
+          code += '    time.sleep(1)\n';
+          return code;
+        };
+        
+        console.log('✅ forBlock generators setup complete - Enhanced compatibility enabled');
+        document.getElementById('methodIndicator').textContent = 'Method: Standard + forBlock (Active)';
+        document.getElementById('methodIndicator').style.background = 'rgba(72, 187, 120, 0.9)';
+      }
+    } catch (error) {
+      console.error('Error setting up forBlock generators:', error);
+      document.getElementById('methodIndicator').textContent = 'Method: Standard Only';
+      document.getElementById('methodIndicator').style.background = 'rgba(237, 137, 54, 0.9)';
+    }
+
+    console.log('DS18B20 custom blocks setup complete with dual method support');
+    
+  } catch (error) {
+    console.error('Error setting up custom blocks:', error);
+    document.getElementById('methodIndicator').textContent = 'Method: Error';
+    document.getElementById('methodIndicator').style.background = 'rgba(229, 62, 62, 0.9)';
+  }
+}
+
+// Enhanced Python code simulator for DS18B20
+function simulatePythonExecution(code) {
+  const outputElement = document.getElementById('executionOutput');
+  const statusIndicator = document.getElementById('statusIndicator');
+  
+  statusIndicator.className = 'status-indicator status-running';
+  
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      try {
+        let output = '';
+        const lines = code.split('\n').filter(line => line.trim() !== '');
+        
+        let currentStep = 0;
+        let loopCount = 0;
+        const maxLoopIterations = 5;
+        
+        function executeStep() {
+          if (currentStep < lines.length) {
+            const line = lines[currentStep].trim();
+            
+            if (line.startsWith('import ')) {
+              output += `✅ ${line}\n`;
+            } else if (line.includes('glob.glob')) {
+              output += `✅ ${line}\n`;
+              output += `  └─ 📁 Found device: /sys/bus/w1/devices/28-00000123abcd/w1_slave\n`;
+            } else if (line.startsWith('def read_temp():')) {
+              output += `✅ ${line}\n`;
+              output += `  └─ 🔧 Function defined\n`;
+            } else if (line.includes('with open(device_file')) {
+              output += `✅ ${line}\n`;
+              output += `  └─ 📖 Opening device file...\n`;
+            } else if (line.includes('lines = f.readlines()')) {
+              output += `✅ ${line}\n`;
+              output += `  └─ 📄 Read sensor data\n`;
+            } else if (line.includes("lines[0].strip()[-3:] == 'YES'")) {
+              output += `✅ ${line}\n`;
+              output += `  └─ ✔️ CRC check passed\n`;
+            } else if (line.includes("temp_str = lines[1].split('t=')[-1]")) {
+              output += `✅ ${line}\n`;
+              output += `  └─ 🔍 Extracted temperature data: 23750\n`;
+            } else if (line.includes('return float(temp_str) / 1000.0')) {
+              output += `✅ ${line}\n`;
+              output += `  └─ 🌡️ Converted to Celsius: 23.75°C\n`;
+            } else if (line.startsWith('while True:')) {
+              output += `✅ ${line}\n`;
+              output += `  └─ 🔄 Starting continuous monitoring...\n`;
+            } else if (line.includes('temp = read_temp()')) {
+              if (loopCount < maxLoopIterations) {
+                const temp = (Math.random() * 10 + 20).toFixed(2); // Random temp between 20-30°C
+                output += `✅ ${line}\n`;
+                output += `  └─ 📊 Temperature reading: ${temp}°C\n`;
+                window.simulatedTemperature = temp;
+              }
+            } else if (line.includes('print(f"Temperature:')) {
+              if (loopCount < maxLoopIterations) {
+                const temp = window.simulatedTemperature || '23.75';
+                output += `✅ ${line}\n`;
+                output += `📺 Temperature: ${temp}°C\n`;
+                loopCount++;
+              }
+            } else if (line.includes('time.sleep(1)')) {
+              if (loopCount < maxLoopIterations) {
+                output += `✅ ${line}\n`;
+                output += `  └─ ⏳ Waiting 1 second...\n\n`;
+              } else if (loopCount === maxLoopIterations) {
+                output += `✅ ${line}\n`;
+                output += `  └─ ⏸️ Simulation stopped (would continue infinitely)\n`;
+                loopCount++;
+              }
+            } else if (line !== '') {
+              output += `✅ ${line}\n`;
+            }
+            
+            // Handle infinite loop simulation
+            if (line.startsWith('while True:') && loopCount >= maxLoopIterations) {
+              output += '\n🔄 Infinite loop completed 5 iterations\n';
+              output += '🛑 Simulation stopped (actual code would run forever)\n';
+              output += '\n📊 Summary:\n';
+              output += '- DS18B20 sensor successfully initialized\n';
+              output += '- Temperature readings taken every second\n';
+              output += '- CRC validation ensures data integrity\n';
+              output += '- Continuous monitoring active\n';
+              
+              outputElement.textContent = output;
+              statusIndicator.className = 'status-indicator status-ready';
+              resolve(output);
+              return;
+            }
+            
+            outputElement.textContent = output + '\n⏳ Executing...';
+            currentStep++;
+            
+            // Reset to loop start for while True simulation
+            if (currentStep >= lines.length && loopCount < maxLoopIterations) {
+              const whileIndex = lines.findIndex(line => line.trim().startsWith('while True:'));
+              if (whileIndex !== -1) {
+                currentStep = whileIndex + 1;
+              }
+            }
+            
+            setTimeout(executeStep, 400);
+          } else {
+            output += '\n🎉 Code execution completed successfully!';
+            outputElement.textContent = output;
+            statusIndicator.className = 'status-indicator status-ready';
+            resolve(output);
+          }
+        }
+        
+        executeStep();
+        
+      } catch (error) {
+        statusIndicator.className = 'status-indicator status-error';
+        const errorOutput = `❌ Error during execution:\n${error.message}\n\n📝 Note: This is a simulation of Python code execution.\nActual hardware interaction requires a real DS18B20 sensor connected via 1-Wire interface.`;
+        outputElement.textContent = errorOutput;
+        resolve(errorOutput);
+      }
+    }, 100);
+  });
+}
+
+// Initialize everything
+function initializeEverything() {
+  console.log('Starting DS18B20 initialization...');
+  
+  if (typeof Blockly === 'undefined' || typeof Blockly.Python === 'undefined') {
+    console.error('Blockly or Blockly.Python not available');
+    document.getElementById('output').innerHTML = '<span style="color: red;">Blockly not properly loaded</span>';
+    return;
+  }
+
+  setupCustomBlocks();
+  
+  try {
+    workspace = Blockly.inject('blocklyDiv', {
+      toolbox: document.getElementById('toolbox'),
+      scrollbars: true,
+      trashcan: true,
+      grid: {
+        spacing: 20,
+        length: 3,
+        colour: '#ccc',
+        snap: true
+      },
+      zoom: {
+        controls: true,
+        wheel: true,
+        startScale: 1.0,
+        maxScale: 3,
+        minScale: 0.3,
+        scaleSpeed: 1.2
+      }
+    });
+    
+    console.log('DS18B20 workspace created successfully');
+    
+  } catch (error) {
+    console.error('Error creating workspace:', error);
+    document.getElementById('output').innerHTML = '<span style="color: red;">Error creating workspace: ' + error.message + '</span>';
+  }
+}
+
+function generateCode() {
+  if (!workspace) {
+    document.getElementById('output').textContent = 'Workspace not ready';
+    return;
+  }
+
+  try {
+    const code = Blockly.Python.workspaceToCode(workspace);
+    
+    if (code.trim() === '') {
+      document.getElementById('output').textContent = '# No blocks in workspace\n# Drag blocks from the toolbox to generate DS18B20 code\n# Use "Complete DS18B20 Code" for a full example';
+      currentCode = '';
+    } else {
+      document.getElementById('output').textContent = code;
+      currentCode = code;
+    }
+    
+  } catch (error) {
+    console.error('Code generation error:', error);
+    document.getElementById('output').innerHTML = '<span style="color: #ff6b6b;">Error: ' + error.message + '</span>';
+    currentCode = '';
+  }
+}
+
+async function runCode() {
+  if (!currentCode || currentCode.trim() === '') {
+    document.getElementById('executionOutput').textContent = '❌ No code to run!\nGenerate Python code first by clicking "Generate Python Code".';
+    return;
+  }
+  
+  document.getElementById('executionOutput').textContent = '🚀 Starting DS18B20 code simulation...\n\n📝 Note: This simulates DS18B20 sensor readings since we cannot access actual hardware in a browser environment.';
+  
+  await simulatePythonExecution(currentCode);
+}
+
+function loadExample() {
+  if (!workspace) return;
+  
+  workspace.clear();
+  
+  const xmlText = `
+  <xml xmlns="https://developers.google.com/blockly/xml">
+    <block type="complete_ds18b20_code" x="50" y="50"></block>
+  </xml>`;
+  
+  try {
+    const xml = Blockly.Xml.textToDom(xmlText);
+    Blockly.Xml.domToWorkspace(xml, workspace);
+    generateCode();
+  } catch (error) {
+    console.error('Error loading example:', error);
+  }
+}
+
+function clearWorkspace() {
+  if (workspace) {
+    workspace.clear();
+    document.getElementById('output').textContent = 'Click "Generate Python Code" to see the result...';
+    document.getElementById('executionOutput').textContent = 'Click "Simulate Execution" to run the generated Python code...';
+    document.getElementById('statusIndicator').className = 'status-indicator status-ready';
+    currentCode = '';
+  }
+}
+
+// Wait for everything to load
+window.addEventListener('load', function() {
+  console.log('Page loaded, initializing in 500ms...');
+  setTimeout(initializeEverything, 500);
+});
+
+// Add some debugging
+window.addEventListener('error', function(e) {
+  console.error('Global error:', e.error);
+});
+
+</script>
+
+</body>
+</html>
