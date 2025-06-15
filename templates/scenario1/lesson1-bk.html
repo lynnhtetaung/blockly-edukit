@@ -180,8 +180,10 @@
   
   <div style="margin: 20px 0;">
     <button onclick="generateCode()">🐍 Generate Python Code</button>
+    <!--  <button onclick="loadExample()" class="load-btn">📝 Load Example</button> -->
     <button onclick="clearWorkspace()" class="clear-btn">🗑️ Clear</button>
-    <button onclick="runCode()" class="run-btn">▶️ Run</button>
+    <!--  <button onclick="testBuiltIn()" class="test-btn">🧪 Test Built-in</button> -->
+    <button onclick="runCode()" class="run-btn">▶️ Simulate Execution</button>
   </div>
 
   <div class="output-container">
@@ -190,7 +192,7 @@
       <pre id="output">Click "Generate Python Code" to see the result...</pre>
     </div>
     <div class="output-section">
-      <h3><span class="status-indicator status-ready" id="statusIndicator"></span>🖥️ Execution Output:</h3>
+      <h3><span class="status-indicator status-ready" id="statusIndicator"></span>Execution Output:</h3>
       <pre id="executionOutput" class="execution-output">Click "Run Code" to execute the generated Python code...</pre>
     </div>
   </div>
@@ -541,6 +543,45 @@ async function runCode() {
   await simulatePythonExecution(currentCode);
 }
 
+<!-- 
+  function loadExample() {
+  if (!workspace) return;
+  
+  workspace.clear();
+  
+  const xmlText = `
+  <xml xmlns="https://developers.google.com/blockly/xml">
+    <block type="import_time_dht" x="20" y="20">
+      <next>
+        <block type="import_board_dht">
+          <next>
+            <block type="import_adafruit_dht">
+              <next>
+                <block type="create_dht_device">
+                  <next>
+                    <block type="read_temperature_dht">
+                      <next>
+                        <block type="print_temperature_dht"></block>
+                      </next>
+                    </block>
+                  </next>
+                </block>
+              </next>
+            </block>
+          </next>
+        </block>
+      </next>
+    </block>
+  </xml>`;
+  
+  try {
+    const xml = Blockly.Xml.textToDom(xmlText);
+    Blockly.Xml.domToWorkspace(xml, workspace);
+  } catch (error) {
+    console.error('Error loading example:', error);
+  }
+} -->
+
 function clearWorkspace() {
   if (workspace) {
     workspace.clear();
@@ -548,6 +589,30 @@ function clearWorkspace() {
     document.getElementById('executionOutput').textContent = 'Click "Run Code" to execute the generated Python code...';
     document.getElementById('statusIndicator').className = 'status-indicator status-ready';
     currentCode = '';
+  }
+}
+
+function testBuiltIn() {
+  if (!workspace) return;
+  
+  workspace.clear();
+  
+  const xmlText = `
+  <xml xmlns="https://developers.google.com/blockly/xml">
+    <block type="text_print" x="20" y="20">
+      <value name="TEXT">
+        <shadow type="text">
+          <field name="TEXT">Testing built-in blocks</field>
+        </shadow>
+      </value>
+    </block>
+  </xml>`;
+  
+  try {
+    const xml = Blockly.Xml.textToDom(xmlText);
+    Blockly.Xml.domToWorkspace(xml, workspace);
+  } catch (error) {
+    console.error('Error loading test:', error);
   }
 }
 
