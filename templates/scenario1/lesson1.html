@@ -74,6 +74,23 @@
     button:hover {
       background: #3182ce;
     }
+    .sensor-info {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .sensor-info h2 {
+      margin: 0 0 10px 0;
+      color: #667eea;
+      font-size: 1.3em;
+    }
+    .sensor-info p {
+      margin: 5px 0;
+      color: #4a5568;
+    }
     .load-btn {
       background: #48bb78;
     }
@@ -145,6 +162,15 @@
 <div class="container">
   <h1>🌡️ DHT22 Temperature Sensor - Blockly Generator</h1>
   <p class="subtitle">Fixed version with Python code execution simulator</p>
+
+   <div class="sensor-info">
+    <h2>🌡️ DHT22 Sensor Information</h2>
+    <p><strong>Interface:</strong> Digital I2C/Single Wire</p>
+    <p><strong>Temperature Range:</strong> -40°C to +80°C (±0.5°C accuracy)</p>
+    <p><strong>Humidity Range:</strong> 0-100% RH (±2-5% accuracy)</p>
+    <p><strong>Connection:</strong> VCC(3.3V), GND, DATA(Digital Pin)</p>
+    <p><strong>Generator Methods:</strong> Standard + forBlock (Dual Compatibility)</p>
+  </div>
 
   <!-- Toolbox -->
   <xml id="toolbox" style="display: none">
