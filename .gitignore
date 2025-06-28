@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg-info/
+*.egg
+*.env
+.env
+.venv
+venv/
+ENV/
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Flask
+instance/
+*.db
+*.sqlite3
+
+# Node/JS (if you use npm for frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+.history/
+
+# Logs
+*.log
+logs/
+*.pid
+
+# Compiled files
+*.so
+*.o
+*.out
+
+# Temporary files
+temp/
+tmp/
+*.swp
+*~
+
+# Static/Uploads (if you store generated files)
+uploads/
+static/generated/
+static/temp/
+
+# Ignore test output
+htmlcov/
+.coverage
+.tox/
+.pytest_cache/
+.cache/
+
+# Ignore secret files
+secrets.json
+config.yaml
+
+# Ignore backup files
+*.bak
+*.old
+*.orig
+
+# Ignore Jupyter Notebooks checkpoints
+.ipynb_checkpoints/

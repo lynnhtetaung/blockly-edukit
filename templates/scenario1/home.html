@@ -1,0 +1,117 @@
+
+<div class="hero">
+    <h1> 🛠️ Scenario1: Detector 🚀</h1>
+    <p class="subtitle">Learn IOT setup with water heater!</p>
+</div>
+
+<div class="scenarios-container">
+    <div class="scenario-card">
+        <div class="scenario-icon">🌡️</div>
+        <h3>Lesson 1</h3>
+        <h4>Read Room Temperature of DHT22 Senseor</h4>
+        <p>Learn how to read temperatures from DHT22 sensors.</p>
+        <a href="/scenario1_lesson1" class="scenario-button">Start Learning</a>
+    </div>
+
+    <div class="scenario-card">
+        <div class="scenario-icon">💧</div>
+        <h3>Lesson 2</h3>
+        <h4>Read Water Temperature of DS18B20 Senseor</h4>
+        <p>Discover how to read water temperature from DS18B20 sensors.</p>
+        <a href="/scenario1_lesson2" class="scenario-button">Start Learning</a>
+    </div>
+
+    <div class="scenario-card">
+        <div class="scenario-icon">🧪</div>
+        <h3>Lesson 3</h3>
+        <h4>Water Level</h4>
+        <p>Create a smart system to monitor and evaluate room comfort levels.</p>
+        <a href="/scenario1_lesson3" class="scenario-button">Start Learning</a>
+    </div>
+
+</div>
+
+<style>
+    .hero {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: linear-gradient(135deg, #6cc3d5, #3498db);
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .scenarios-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 1rem;
+    }
+
+    .scenario-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .scenario-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .scenario-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .scenario-card h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .scenario-card h4 {
+        color: #3498db;
+        margin-bottom: 1rem;
+    }
+
+    .scenario-card p {
+        color: #666;
+        margin-bottom: 1.5rem;
+    }
+
+    .scenario-button {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: background 0.3s ease;
+    }
+
+    .scenario-button:hover {
+        background: #2980b9;
+    }
+
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2rem;
+        }
+        
+        .scenarios-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

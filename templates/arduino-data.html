@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sensor Dashboard (Parallel View)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .status {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #444;
+    }
+    canvas {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🌐 Real-Time Arduino Sensor Dashboard</h1>
+
+<div class="grid">
+  <!-- DS18B20 -->
+  <div class="card">
+    <h2>DS18B20 Temperature</h2>
+    <div class="status" id="ds18b20-status">Waiting...</div>
+    <canvas id="dsChart"></canvas>
+  </div>
+
+  <!-- DHT22 -->
+  <div class="card">
+    <h2>DHT22 Temp & Humidity</h2>
+    <div class="status" id="dht-status">Waiting...</div>
+    <canvas id="dhtChart"></canvas>
+  </div>
+
+  <!-- Water Sensor -->
+  <div class="card">
+    <h2>Water Level</h2>
+    <div class="status" id="water-status">Waiting...</div>
+    <canvas id="waterChart"></canvas>
+  </div>
+</div>
+
+<script>
+  const dsChart = new Chart(document.getElementById("dsChart"), {
+    type: "line",
+    data: { labels: [], datasets: [{ label: "°C", borderColor: "blue", data: [], fill: false }] }
+  });
+
+  const dhtChart = new Chart(document.getElementById("dhtChart"), {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [
+        { label: "Temp (°C)", borderColor: "green", data: [], fill: false },
+        { label: "Humidity (%)", borderColor: "purple", data: [], fill: false }
+      ]
+    }
+  });
+
+  const waterChart = new Chart(document.getElementById("waterChart"), {
+    type: "line",
+    data: { labels: [], datasets: [{ label: "Raw Value", borderColor: "orange", data: [], fill: false }] }
+  });
+
+  function updateCharts(data) {
+    const t = data.timestamp || new Date().toLocaleTimeString();
+
+    document.getElementById("ds18b20-status").innerText = `${data.ds18b20} °C at ${t}`;
+    document.getElementById("dht-status").innerText = `${data.dht22_temp} °C / ${data.dht22_humidity}% at ${t}`;
+    document.getElementById("water-status").innerText = `${data.water_level} at ${t}`;
+
+    // DS18B20
+    dsChart.data.labels.push(t);
+    dsChart.data.datasets[0].data.push(data.ds18b20);
+    if (dsChart.data.labels.length > 20) {
+      dsChart.data.labels.shift();
+      dsChart.data.datasets[0].data.shift();
+    }
+
+    // DHT22
+    dhtChart.data.labels.push(t);
+    dhtChart.data.datasets[0].data.push(data.dht22_temp);
+    dhtChart.data.datasets[1].data.push(data.dht22_humidity);
+    if (dhtChart.data.labels.length > 20) {
+      dhtChart.data.labels.shift();
+      dhtChart.data.datasets[0].data.shift();
+      dhtChart.data.datasets[1].data.shift();
+    }
+
+    // Water Sensor
+    waterChart.data.labels.push(t);
+    waterChart.data.datasets[0].data.push(data.water_level);
+    if (waterChart.data.labels.length > 20) {
+      waterChart.data.labels.shift();
+      waterChart.data.datasets[0].data.shift();
+    }
+
+    dsChart.update();
+    dhtChart.update();
+    waterChart.update();
+  }
+
+  async function poll() {
+    try {
+      const res = await fetch("/api/latest");
+      const data = await res.json();
+      updateCharts(data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+  }
+
+  setInterval(poll, 5000);
+</script>
+
+</body>
+</html>

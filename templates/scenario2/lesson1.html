@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Blockly - Sensor Data from Arduino</title>
+  <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
+  <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+  <script src="https://unpkg.com/blockly/python_compressed.js"></script>
+  <script src="https://unpkg.com/blockly/msg/en.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+    #blocklyDiv { height: 400px; width: 100%; margin-bottom: 1rem; border: 2px solid #ccc; border-radius: 8px; }
+    pre { background: #1a202c; color: #68d391; padding: 1rem; border-radius: 8px; }
+    button { margin-top: 10px; padding: 10px 20px; background-color: #4299e1; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #3182ce; }
+  </style>
+</head>
+<body>
+  <h1>Blockly - Arduino Sensor Control</h1>
+
+  <xml id="toolbox" style="display: none">
+    <category name="📡 Arduino API" colour="160">
+      <block type="get_sensor_data"></block>
+      <block type="print_data"></block>
+    </category>
+  </xml>
+
+  <div id="blocklyDiv"></div>
+  <button onclick="generateCode()">Generate Python Code</button>
+  <button onclick="runCode()">Run Code (Simulated)</button>
+
+  <h2>Generated Python Code</h2>
+  <pre id="codeOutput"># Generated code will appear here</pre>
+  <h2>Execution Output</h2>
+  <pre id="execOutput"># Simulation output will appear here</pre>
+
+  <script>
+    Blockly.defineBlocksWithJsonArray([
+      {
+        "type": "get_sensor_data",
+        "message0": "get data from Arduino",
+        "output": null,
+        "colour": 160,
+        "tooltip": "Get all sensor data via API",
+        "helpUrl": ""
+      },
+      {
+        "type": "print_data",
+        "message0": "print %1",
+        "args0": [
+          {
+            "type": "input_value",
+            "name": "VALUE"
+          }
+        ],
+        "previousStatement": null,
+        "nextStatement": null,
+        "colour": 230,
+        "tooltip": "Print any value",
+        "helpUrl": ""
+      }
+    ]);
+
+    Blockly.Python['get_sensor_data'] = function(block) {
+      return ['requests.get("http://192.168.0.100:5000/api/latest").json()', Blockly.Python.ORDER_FUNCTION_CALL];
+    };
+
+    Blockly.Python['print_data'] = function(block) {
+      var argument = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_NONE) || '""';
+      return 'print(' + argument + ')\n';
+    };
+
+    var workspace = Blockly.inject('blocklyDiv', {
+      toolbox: document.getElementById('toolbox')
+    });
+
+    function generateCode() {
+      const code = Blockly.Python.workspaceToCode(workspace);
+      document.getElementById('codeOutput').textContent = code;
+    }
+
+    function runCode() {
+      const code = Blockly.Python.workspaceToCode(workspace);
+      document.getElementById('execOutput').textContent = '# Running simulated code...';
+      try {
+        const func = new Function('requests', `return ${code}`);
+        const fakeRequests = {
+          get: (url) => {
+            console.log('Mock GET:', url);
+            return {
+              json: () => ({
+                ds18b20: 24.5,
+                dht22_temp: 25.3,
+                dht22_humidity: 60.0,
+                water_level: 300
+              })
+            };
+          }
+        };
+        const result = func(fakeRequests);
+        document.getElementById('execOutput').textContent = 'Simulated Output:\n' + JSON.stringify(result, null, 2);
+      } catch (e) {
+        document.getElementById('execOutput').textContent = '❌ Error: ' + e.message;
+      }
+    }
+  </script>
+</body>
+</html>
