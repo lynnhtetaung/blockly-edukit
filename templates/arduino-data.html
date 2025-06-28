@@ -12,7 +12,30 @@
     }
     h1 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-right: 10px;
+      background: #4299e1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background: #3182ce;
+    }
+    .polling-status {
+      display: inline-block;
+      font-weight: bold;
+      font-size: 14px;
+      color: #4a5568;
     }
     .grid {
       display: grid;
@@ -42,23 +65,22 @@
 <body>
 
 <h1>🌐 Real-Time Arduino Sensor Dashboard</h1>
+<div class="controls">
+  <button id="toggleBtn" onclick="togglePolling()">⏸️ Pause</button>
+  <span class="polling-status" id="pollStatus">✅ Polling active</span>
+</div>
 
 <div class="grid">
-  <!-- DS18B20 -->
   <div class="card">
     <h2>DS18B20 Temperature</h2>
     <div class="status" id="ds18b20-status">Waiting...</div>
     <canvas id="dsChart"></canvas>
   </div>
-
-  <!-- DHT22 -->
   <div class="card">
     <h2>DHT22 Temp & Humidity</h2>
     <div class="status" id="dht-status">Waiting...</div>
     <canvas id="dhtChart"></canvas>
   </div>
-
-  <!-- Water Sensor -->
   <div class="card">
     <h2>Water Level</h2>
     <div class="status" id="water-status">Waiting...</div>
@@ -67,6 +89,9 @@
 </div>
 
 <script>
+  let pollingActive = true;
+  let pollingInterval;
+
   const dsChart = new Chart(document.getElementById("dsChart"), {
     type: "line",
     data: { labels: [], datasets: [{ label: "°C", borderColor: "blue", data: [], fill: false }] }
@@ -95,7 +120,6 @@
     document.getElementById("dht-status").innerText = `${data.dht22_temp} °C / ${data.dht22_humidity}% at ${t}`;
     document.getElementById("water-status").innerText = `${data.water_level} at ${t}`;
 
-    // DS18B20
     dsChart.data.labels.push(t);
     dsChart.data.datasets[0].data.push(data.ds18b20);
     if (dsChart.data.labels.length > 20) {
@@ -103,7 +127,6 @@
       dsChart.data.datasets[0].data.shift();
     }
 
-    // DHT22
     dhtChart.data.labels.push(t);
     dhtChart.data.datasets[0].data.push(data.dht22_temp);
     dhtChart.data.datasets[1].data.push(data.dht22_humidity);
@@ -113,7 +136,6 @@
       dhtChart.data.datasets[1].data.shift();
     }
 
-    // Water Sensor
     waterChart.data.labels.push(t);
     waterChart.data.datasets[0].data.push(data.water_level);
     if (waterChart.data.labels.length > 20) {
@@ -127,6 +149,7 @@
   }
 
   async function poll() {
+    if (!pollingActive) return;
     try {
       const res = await fetch("/api/latest");
       const data = await res.json();
@@ -136,7 +159,21 @@
     }
   }
 
-  setInterval(poll, 5000);
+  function togglePolling() {
+    pollingActive = !pollingActive;
+    const btn = document.getElementById("toggleBtn");
+    const status = document.getElementById("pollStatus");
+
+    if (pollingActive) {
+      btn.textContent = "⏸️ Pause";
+      status.textContent = "✅ Polling active";
+    } else {
+      btn.textContent = "▶️ Resume";
+      status.textContent = "⏸️ Polling paused";
+    }
+  }
+
+  pollingInterval = setInterval(poll, 5000);
 </script>
 
 </body>
