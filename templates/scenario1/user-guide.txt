@@ -1,0 +1,5 @@
+💡 How to use:
+1. Drag blocks from the toolbox to create your water sensor program
+2. Click "Generate Python Code" to see the result
+3. Click "Run Simulation" to test the logic
+4. Use "Load Complete Example" for a ready-to-use program

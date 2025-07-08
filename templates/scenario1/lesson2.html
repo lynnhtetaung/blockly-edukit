@@ -213,24 +213,13 @@
 </head>
 <body>
 
-<div class="method-indicator" id="methodIndicator">Method: Standard + forBlock</div>
-
 <div class="container">
   <h1>🌡️ DS18B20 Temperature Sensor</h1>
-  <p class="subtitle">1-Wire Digital Temperature Sensor - Enhanced Blockly Code Generator</p>
-
-  <div class="sensor-info">
-    <h2>📊 DS18B20 Sensor Information</h2>
-    <p><strong>Interface:</strong> 1-Wire Digital</p>
-    <p><strong>Accuracy:</strong> ±0.5°C (-10°C to +85°C)</p>
-    <p><strong>Resolution:</strong> 9 to 12 bits (0.5°C to 0.0625°C)</p>
-    <p><strong>File Path:</strong> /sys/bus/w1/devices/28*/w1_slave</p>
-    <p><strong>Generator Methods:</strong> Standard + forBlock (Dual Compatibility)</p>
-  </div>
+  <p class="subtitle">1-Wire Digital, <strong>File Path:</strong> /sys/bus/w1/devices/28*/w1_slave</p>
 
   <!-- Toolbox -->
   <xml id="toolbox" style="display: none">
-    <category name="📥 Imports" colour="230">
+    <category name="📥 Import Modules" colour="230">
       <block type="import_glob"></block>
       <block type="import_time"></block>
     </category>
@@ -250,21 +239,6 @@
       <block type="call_read_temp"></block>
       <block type="print_temperature"></block>
       <block type="sleep_delay"></block>
-    </category>
-    <category name="🎯 Complete Code" colour="290">
-      <block type="complete_ds18b20_code"></block>
-    </category>
-    <category name="🧪 Built-in Test" colour="20">
-      <block type="text_print">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">Hello DS18B20!</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text">
-        <field name="TEXT">test message</field>
-      </block>
     </category>
   </xml>
 
@@ -495,34 +469,6 @@ function setupCustomBlocks() {
       return '    time.sleep(1)\n';
     };
 
-    // Complete code block
-    Blockly.Blocks['complete_ds18b20_code'] = {
-      init: function() {
-        this.appendDummyInput().appendField("🎯 Complete DS18B20 Code");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(290);
-        this.setTooltip("Generate complete DS18B20 temperature reading code");
-      }
-    };
-    
-    Blockly.Python['complete_ds18b20_code'] = function(block) {
-      var code = 'import glob\n';
-      code += 'import time\n\n';
-      code += "device_file = glob.glob('/sys/bus/w1/devices/28*/w1_slave')[0]\n\n";
-      code += 'def read_temp():\n';
-      code += "    with open(device_file, 'r') as f:\n";
-      code += '        lines = f.readlines()\n';
-      code += "    if lines[0].strip()[-3:] == 'YES':\n";
-      code += "        temp_str = lines[1].split('t=')[-1]\n";
-      code += '        return float(temp_str) / 1000.0\n\n';
-      code += 'while True:\n';
-      code += '    temp = read_temp()\n';
-      code += '    print(f"Temperature: {temp:.2f}°C")\n';
-      code += '    time.sleep(1)\n';
-      return code;
-    };
-
     console.log('Standard generators setup complete');
 
     // METHOD 2: forBlock generators for enhanced compatibility
@@ -580,39 +526,16 @@ function setupCustomBlocks() {
           return '    time.sleep(1)\n';
         };
         
-        Blockly.Python.forBlock['complete_ds18b20_code'] = function(block) {
-          var code = 'import glob\n';
-          code += 'import time\n\n';
-          code += "device_file = glob.glob('/sys/bus/w1/devices/28*/w1_slave')[0]\n\n";
-          code += 'def read_temp():\n';
-          code += "    with open(device_file, 'r') as f:\n";
-          code += '        lines = f.readlines()\n';
-          code += "    if lines[0].strip()[-3:] == 'YES':\n";
-          code += "        temp_str = lines[1].split('t=')[-1]\n";
-          code += '        return float(temp_str) / 1000.0\n\n';
-          code += 'while True:\n';
-          code += '    temp = read_temp()\n';
-          code += '    print(f"Temperature: {temp:.2f}°C")\n';
-          code += '    time.sleep(1)\n';
-          return code;
-        };
-        
         console.log('✅ forBlock generators setup complete - Enhanced compatibility enabled');
-        document.getElementById('methodIndicator').textContent = 'Method: Standard + forBlock (Active)';
-        document.getElementById('methodIndicator').style.background = 'rgba(72, 187, 120, 0.9)';
       }
     } catch (error) {
       console.error('Error setting up forBlock generators:', error);
-      document.getElementById('methodIndicator').textContent = 'Method: Standard Only';
-      document.getElementById('methodIndicator').style.background = 'rgba(237, 137, 54, 0.9)';
     }
 
     console.log('DS18B20 custom blocks setup complete with dual method support');
     
   } catch (error) {
     console.error('Error setting up custom blocks:', error);
-    document.getElementById('methodIndicator').textContent = 'Method: Error';
-    document.getElementById('methodIndicator').style.background = 'rgba(229, 62, 62, 0.9)';
   }
 }
 

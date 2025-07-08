@@ -160,44 +160,19 @@
 <body>
 
 <div class="container">
-  <h1>🌡️ DHT22 Temperature Sensor - Blockly Generator</h1>
-  <p class="subtitle">Fixed version with Python code execution simulator</p>
-
-   <div class="sensor-info">
-    <h2>🌡️ DHT22 Sensor Information</h2>
-    <p><strong>Interface:</strong> Digital I2C/Single Wire</p>
-    <p><strong>Temperature Range:</strong> -40°C to +80°C (±0.5°C accuracy)</p>
-    <p><strong>Humidity Range:</strong> 0-100% RH (±2-5% accuracy)</p>
-    <p><strong>Connection:</strong> VCC(3.3V), GND, DATA(Digital Pin)</p>
-    <p><strong>Generator Methods:</strong> Standard + forBlock (Dual Compatibility)</p>
-  </div>
+  <h1>🌡️ DHT22 Temperature Sensor</h1>
+  <p class="subtitle"><strong>Connection:</strong> VCC(3.3V), GND, DATA(D13, GPIO13)</p>
 
   <!-- Toolbox -->
   <xml id="toolbox" style="display: none">
-    <category name="🔧 Imports" colour="230">
-      <block type="import_time_dht"></block>
+    <category name="🔧 Import Modules" colour="230">
       <block type="import_board_dht"></block>
       <block type="import_adafruit_dht"></block>
     </category>
-    <category name="📡 DHT22" colour="120">
+    <category name="📡 DHT22 Sensor" colour="120">
       <block type="create_dht_device"></block>
       <block type="read_temperature_dht"></block>
       <block type="print_temperature_dht"></block>
-    </category>
-    <category name="🎯 Complete" colour="65">
-      <block type="complete_dht22_code"></block>
-    </category>
-    <category name="📝 Built-in Test" colour="290">
-      <block type="text_print">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">Hello World</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text">
-        <field name="TEXT">test</field>
-      </block>
     </category>
   </xml>
 
@@ -232,21 +207,6 @@ function setupCustomBlocks() {
   
   // Method 1: Try direct assignment to Blockly.Python
   try {
-    // Import time
-    Blockly.Blocks['import_time_dht'] = {
-      init: function() {
-        this.appendDummyInput().appendField("import time");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(230);
-        this.setTooltip("Import time module");
-      }
-    };
-    
-    Blockly.Python['import_time_dht'] = function(block) {
-      return 'import time\n';
-    };
-
     // Import board
     Blockly.Blocks['import_board_dht'] = {
       init: function() {
@@ -322,27 +282,6 @@ function setupCustomBlocks() {
       return 'print(f"Temperature: {temperature_c:.1f}°C")\n';
     };
 
-    // Complete code
-    Blockly.Blocks['complete_dht22_code'] = {
-      init: function() {
-        this.appendDummyInput().appendField("🎯 Complete DHT22 Code");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(65);
-        this.setTooltip("Generate complete DHT22 code");
-      }
-    };
-    
-    Blockly.Python['complete_dht22_code'] = function(block) {
-      var code = 'import time\n';
-      code += 'import board\n';
-      code += 'import adafruit_dht\n';
-      code += 'dhtDevice = adafruit_dht.DHT22(board.D13, use_pulseio=False)\n';
-      code += 'temperature_c = dhtDevice.temperature\n';
-      code += 'print(f"Temperature: {temperature_c:.1f}°C")\n';
-      return code;
-    };
-
     console.log('Custom blocks setup complete');
     
   } catch (error) {
@@ -352,9 +291,6 @@ function setupCustomBlocks() {
   // Method 2: Try using forBlock if it exists
   try {
     if (Blockly.Python.forBlock) {
-      Blockly.Python.forBlock['import_time_dht'] = function(block) {
-        return 'import time\n';
-      };
       
       Blockly.Python.forBlock['import_board_dht'] = function(block) {
         return 'import board\n';
@@ -374,16 +310,6 @@ function setupCustomBlocks() {
       
       Blockly.Python.forBlock['print_temperature_dht'] = function(block) {
         return 'print(f"Temperature: {temperature_c:.1f}°C")\n';
-      };
-      
-      Blockly.Python.forBlock['complete_dht22_code'] = function(block) {
-        var code = 'import time\n';
-        code += 'import board\n';
-        code += 'import adafruit_dht\n';
-        code += 'dhtDevice = adafruit_dht.DHT22(board.D13, use_pulseio=False)\n';
-        code += 'temperature_c = dhtDevice.temperature\n';
-        code += 'print(f"Temperature: {temperature_c:.1f}°C")\n';
-        return code;
       };
       
       console.log('forBlock generators setup complete');

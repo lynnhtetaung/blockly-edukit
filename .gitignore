@@ -49,6 +49,7 @@ temp/
 tmp/
 *.swp
 *~
+venv/
 
 # Static/Uploads (if you store generated files)
 uploads/

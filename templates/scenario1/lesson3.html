@@ -185,17 +185,9 @@
   <h1>🌊 Digital Water Sensor - Blockly Generator</h1>
   <p class="subtitle">Visual programming for Raspberry Pi water level monitoring</p>
 
-  <div class="info-card">
-    <h4>💡 How to use:</h4>
-    <p>1. Drag blocks from the toolbox to create your water sensor program<br>
-    2. Click "Generate Python Code" to see the result<br>
-    3. Click "Run Simulation" to test the logic<br>
-    4. Use "Load Complete Example" for a ready-to-use program</p>
-  </div>
-
   <!-- Toolbox -->
   <xml id="toolbox" style="display: none">
-    <category name="📦 Imports" colour="230">
+    <category name="📦 Import Modules" colour="230">
       <block type="import_rpi_gpio"></block>
       <block type="import_time"></block>
     </category>
@@ -215,21 +207,6 @@
       <block type="infinite_loop"></block>
       <block type="delay_one_second"></block>
       <block type="gpio_cleanup"></block>
-    </category>
-    <category name="🎯 Complete Example" colour="65">
-      <block type="complete_water_sensor"></block>
-    </category>
-    <category name="📝 Basic Blocks" colour="160">
-      <block type="text_print">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">Hello World</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text">
-        <field name="TEXT">Custom message</field>
-      </block>
     </category>
   </xml>
 
@@ -469,40 +446,6 @@ function setupCustomBlocks() {
       return 'GPIO.cleanup()\n';
     };
 
-    // Complete water sensor code
-    Blockly.Blocks['complete_water_sensor'] = {
-      init: function() {
-        this.appendDummyInput().appendField("🎯 Complete Water Sensor Program");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(65);
-        this.setTooltip("Generate complete water sensor monitoring code");
-      }
-    };
-    
-    Blockly.Python['complete_water_sensor'] = function(block) {
-      var code = 'import RPi.GPIO as GPIO\n';
-      code += 'import time\n\n';
-      code += '# Use BCM pin numbering\n';
-      code += 'GPIO.setmode(GPIO.BCM)\n\n';
-      code += '# Set the GPIO pin connected to the signal pin of the sensor\n';
-      code += 'WATER_SENSOR_PIN = 17\n\n';
-      code += '# Set pin as input\n';
-      code += 'GPIO.setup(WATER_SENSOR_PIN, GPIO.IN)\n\n';
-      code += 'print("🌊 Monitoring water level (CTRL+C to stop)...")\n\n';
-      code += 'try:\n';
-      code += '    while True:\n';
-      code += '        if GPIO.input(WATER_SENSOR_PIN) == GPIO.LOW:\n';
-      code += '            print("💧 Water detected!")\n';
-      code += '        else:\n';
-      code += '            print("⚠️ No water detected.")\n';
-      code += '        time.sleep(1)\n\n';
-      code += 'except KeyboardInterrupt:\n';
-      code += '    print("\\nStopped by user.")\n';
-      code += '    GPIO.cleanup()\n';
-      return code;
-    };
-
     console.log('Water sensor blocks setup complete');
     
   } catch (error) {
@@ -570,29 +513,6 @@ function setupCustomBlocks() {
       
       Blockly.Python.forBlock['gpio_cleanup'] = function(block) {
         return 'GPIO.cleanup()\n';
-      };
-      
-      Blockly.Python.forBlock['complete_water_sensor'] = function(block) {
-        var code = 'import RPi.GPIO as GPIO\n';
-        code += 'import time\n\n';
-        code += '# Use BCM pin numbering\n';
-        code += 'GPIO.setmode(GPIO.BCM)\n\n';
-        code += '# Set the GPIO pin connected to the signal pin of the sensor\n';
-        code += 'WATER_SENSOR_PIN = 17\n\n';
-        code += '# Set pin as input\n';
-        code += 'GPIO.setup(WATER_SENSOR_PIN, GPIO.IN)\n\n';
-        code += 'print("🌊 Monitoring water level (CTRL+C to stop)...")\n\n';
-        code += 'try:\n';
-        code += '    while True:\n';
-        code += '        if GPIO.input(WATER_SENSOR_PIN) == GPIO.LOW:\n';
-        code += '            print("💧 Water detected!")\n';
-        code += '        else:\n';
-        code += '            print("⚠️ No water detected.")\n';
-        code += '        time.sleep(1)\n\n';
-        code += 'except KeyboardInterrupt:\n';
-        code += '    print("\\nStopped by user.")\n';
-        code += '    GPIO.cleanup()\n';
-        return code;
       };
       
       console.log('forBlock generators setup complete');
