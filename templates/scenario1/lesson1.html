@@ -323,75 +323,80 @@ function setupCustomBlocks() {
 function simulatePythonExecution(code) {
   const outputElement = document.getElementById('executionOutput');
   const statusIndicator = document.getElementById('statusIndicator');
-  
+
   // Set status to running
   statusIndicator.className = 'status-indicator status-running';
-  
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      try {
-        let output = '';
-        const lines = code.split('\n').filter(line => line.trim() !== '');
-        
-        // Simulate execution step by step
-        let currentStep = 0;
-        
-        function executeStep() {
-          if (currentStep < lines.length) {
-            const line = lines[currentStep].trim();
-            
-            if (line.startsWith('import ')) {
-              output += `✓ ${line}\n`;
-            } else if (line.includes('adafruit_dht.DHT22')) {
-              output += `✓ ${line}\n`;
-              output += `  └─ DHT22 sensor initialized on pin D13\n`;
-            } else if (line.includes('temperature_c = dhtDevice.temperature')) {
-              const temperature = (Math.random() * 15 + 20).toFixed(1); // Random temp between 20-35°C
-              output += `✓ ${line}\n`;
-              output += `  └─ Reading sensor... Temperature: ${temperature}°C\n`;
-              
-              // Store the temperature for the print statement
-              window.simulatedTemperature = temperature;
-            } else if (line.includes('print(f"Temperature:')) {
-              const temp = window.simulatedTemperature || '23.5';
-              output += `✓ ${line}\n`;
-              output += `📊 Temperature: ${temp}°C\n`;
-            } else if (line.startsWith('print(')) {
-              // Handle regular print statements
-              const match = line.match(/print\(['"](.+?)['"]\)/);
-              if (match) {
+  outputElement.textContent = '📡 Fetching real DHT22 temperature data...\n';
+
+  return fetch('/api/dht22/live')
+    .then(response => response.json())
+    .then(sensorData => {
+      return new Promise((resolve) => {
+        try {
+          let output = '';
+          const lines = code.split('\n').filter(line => line.trim() !== '');
+          const temperature = sensorData.dht22_temp?.toFixed(1) || 'N/A';
+          const timestamp = sensorData.timestamp || 'Unknown';
+
+          let currentStep = 0;
+
+          function executeStep() {
+            if (currentStep < lines.length) {
+              const line = lines[currentStep].trim();
+
+              if (line.startsWith('import ')) {
                 output += `✓ ${line}\n`;
-                output += `📝 ${match[1]}\n`;
-              } else {
+              } else if (line.includes('adafruit_dht.DHT22')) {
+                output += `✓ ${line}\n`;
+                output += `  └─ DHT22 sensor initialized on pin D13\n`;
+              } else if (line.includes('temperature_c = dhtDevice.temperature')) {
+                output += `✓ ${line}\n`;
+                output += `  └─ Reading sensor... Temperature: ${temperature}°C\n`;
+                window.simulatedTemperature = temperature;
+              } else if (line.includes('print(f"Temperature:')) {
+                const temp = window.simulatedTemperature || 'N/A';
+                output += `✓ ${line}\n`;
+                output += `📊 Temperature: ${temp}°C\n`;
+              } else if (line.startsWith('print(')) {
+                const match = line.match(/print\(['"](.+?)['"]\)/);
+                if (match) {
+                  output += `✓ ${line}\n`;
+                  output += `📝 ${match[1]}\n`;
+                } else {
+                  output += `✓ ${line}\n`;
+                }
+              } else if (line !== '') {
                 output += `✓ ${line}\n`;
               }
-            } else if (line !== '') {
-              output += `✓ ${line}\n`;
+
+              outputElement.textContent = output + '\n⏳ Executing...';
+              currentStep++;
+              setTimeout(executeStep, 300);
+            } else {
+              output += `\n🕒 Timestamp: ${timestamp}\n`;
+              output += '\n🎉 Execution completed successfully!';
+              outputElement.textContent = output;
+              statusIndicator.className = 'status-indicator status-ready';
+              resolve(output);
             }
-            
-            outputElement.textContent = output + '\n⏳ Executing...';
-            currentStep++;
-            
-            setTimeout(executeStep, 300); // Delay between steps
-          } else {
-            // Execution complete
-            output += '\n🎉 Execution completed successfully!';
-            outputElement.textContent = output;
-            statusIndicator.className = 'status-indicator status-ready';
-            resolve(output);
           }
+
+          executeStep();
+
+        } catch (error) {
+          statusIndicator.className = 'status-indicator status-error';
+          const errorOutput = `❌ Error during execution:\n${error.message}\n\nNote: This is a simulation of Python code execution.\nActual hardware interaction would require a real DHT22 sensor.`;
+          outputElement.textContent = errorOutput;
+          resolve(errorOutput);
         }
-        
-        executeStep();
-        
-      } catch (error) {
-        statusIndicator.className = 'status-indicator status-error';
-        const errorOutput = `❌ Error during execution:\n${error.message}\n\nNote: This is a simulation of Python code execution.\nActual hardware interaction would require a real DHT22 sensor.`;
-        outputElement.textContent = errorOutput;
-        resolve(errorOutput);
-      }
-    }, 100);
-  });
+      });
+    })
+    .catch(error => {
+      statusIndicator.className = 'status-indicator status-error';
+      const errorOutput = `❌ Failed to fetch real DHT22 data:\n${error.message}`;
+      outputElement.textContent = errorOutput;
+      return Promise.resolve(errorOutput);
+    });
 }
 
 // Initialize everything

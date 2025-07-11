@@ -543,123 +543,41 @@ function setupCustomBlocks() {
 function simulatePythonExecution(code) {
   const outputElement = document.getElementById('executionOutput');
   const statusIndicator = document.getElementById('statusIndicator');
-  
+
   statusIndicator.className = 'status-indicator status-running';
-  
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      try {
-        let output = '';
-        const lines = code.split('\n').filter(line => line.trim() !== '');
-        
-        let currentStep = 0;
-        let loopCount = 0;
-        const maxLoopIterations = 5;
-        
-        function executeStep() {
-          if (currentStep < lines.length) {
-            const line = lines[currentStep].trim();
-            
-            if (line.startsWith('import ')) {
-              output += `✅ ${line}\n`;
-            } else if (line.includes('glob.glob')) {
-              output += `✅ ${line}\n`;
-              output += `  └─ 📁 Found device: /sys/bus/w1/devices/28-00000123abcd/w1_slave\n`;
-            } else if (line.startsWith('def read_temp():')) {
-              output += `✅ ${line}\n`;
-              output += `  └─ 🔧 Function defined\n`;
-            } else if (line.includes('with open(device_file')) {
-              output += `✅ ${line}\n`;
-              output += `  └─ 📖 Opening device file...\n`;
-            } else if (line.includes('lines = f.readlines()')) {
-              output += `✅ ${line}\n`;
-              output += `  └─ 📄 Read sensor data\n`;
-            } else if (line.includes("lines[0].strip()[-3:] == 'YES'")) {
-              output += `✅ ${line}\n`;
-              output += `  └─ ✔️ CRC check passed\n`;
-            } else if (line.includes("temp_str = lines[1].split('t=')[-1]")) {
-              output += `✅ ${line}\n`;
-              output += `  └─ 🔍 Extracted temperature data: 23750\n`;
-            } else if (line.includes('return float(temp_str) / 1000.0')) {
-              output += `✅ ${line}\n`;
-              output += `  └─ 🌡️ Converted to Celsius: 23.75°C\n`;
-            } else if (line.startsWith('while True:')) {
-              output += `✅ ${line}\n`;
-              output += `  └─ 🔄 Starting continuous monitoring...\n`;
-            } else if (line.includes('temp = read_temp()')) {
-              if (loopCount < maxLoopIterations) {
-                const temp = (Math.random() * 10 + 20).toFixed(2); // Random temp between 20-30°C
-                output += `✅ ${line}\n`;
-                output += `  └─ 📊 Temperature reading: ${temp}°C\n`;
-                window.simulatedTemperature = temp;
-              }
-            } else if (line.includes('print(f"Temperature:')) {
-              if (loopCount < maxLoopIterations) {
-                const temp = window.simulatedTemperature || '23.75';
-                output += `✅ ${line}\n`;
-                output += `📺 Temperature: ${temp}°C\n`;
-                loopCount++;
-              }
-            } else if (line.includes('time.sleep(1)')) {
-              if (loopCount < maxLoopIterations) {
-                output += `✅ ${line}\n`;
-                output += `  └─ ⏳ Waiting 1 second...\n\n`;
-              } else if (loopCount === maxLoopIterations) {
-                output += `✅ ${line}\n`;
-                output += `  └─ ⏸️ Simulation stopped (would continue infinitely)\n`;
-                loopCount++;
-              }
-            } else if (line !== '') {
-              output += `✅ ${line}\n`;
-            }
-            
-            // Handle infinite loop simulation
-            if (line.startsWith('while True:') && loopCount >= maxLoopIterations) {
-              output += '\n🔄 Infinite loop completed 5 iterations\n';
-              output += '🛑 Simulation stopped (actual code would run forever)\n';
-              output += '\n📊 Summary:\n';
-              output += '- DS18B20 sensor successfully initialized\n';
-              output += '- Temperature readings taken every second\n';
-              output += '- CRC validation ensures data integrity\n';
-              output += '- Continuous monitoring active\n';
-              
-              outputElement.textContent = output;
-              statusIndicator.className = 'status-indicator status-ready';
-              resolve(output);
-              return;
-            }
-            
-            outputElement.textContent = output + '\n⏳ Executing...';
-            currentStep++;
-            
-            // Reset to loop start for while True simulation
-            if (currentStep >= lines.length && loopCount < maxLoopIterations) {
-              const whileIndex = lines.findIndex(line => line.trim().startsWith('while True:'));
-              if (whileIndex !== -1) {
-                currentStep = whileIndex + 1;
-              }
-            }
-            
-            setTimeout(executeStep, 400);
-          } else {
-            output += '\n🎉 Code execution completed successfully!';
-            outputElement.textContent = output;
-            statusIndicator.className = 'status-indicator status-ready';
-            resolve(output);
-          }
-        }
-        
-        executeStep();
-        
-      } catch (error) {
-        statusIndicator.className = 'status-indicator status-error';
-        const errorOutput = `❌ Error during execution:\n${error.message}\n\n📝 Note: This is a simulation of Python code execution.\nActual hardware interaction requires a real DS18B20 sensor connected via 1-Wire interface.`;
-        outputElement.textContent = errorOutput;
-        resolve(errorOutput);
-      }
-    }, 100);
-  });
+  outputElement.textContent = '📡 Fetching real DS18B20 temperature data...\n';
+
+  fetch('/api/ds18b20/live')
+    .then(response => response.json())
+    .then(sensorData => {
+      const temperature = sensorData.ds18b20_temp?.toFixed(2) || 'N/A';
+      const timestamp = sensorData.timestamp || 'Unknown';
+
+      let output = '';
+      output += `✅ import os\n`;
+      output += `✅ import glob\n`;
+      output += `✅ import time\n`;
+      output += `✅ base_dir = '/sys/bus/w1/devices/'\n`;
+      output += `✅ device_folder = glob.glob(base_dir + '28*')[0]\n`;
+      output += `✅ device_file = device_folder + '/w1_slave'\n`;
+      output += `✅ def read_temp():\n`;
+      output += `  └─ 🔧 Defined function to read DS18B20 temperature\n`;
+      output += `✅ temp = read_temp()\n`;
+      output += `  └─ 📊 Temperature reading: ${temperature}°C\n`;
+      output += `📺 Temperature: ${temperature}°C\n`;
+      output += `🕒 Timestamp: ${timestamp}\n`;
+      output += '\n🎉 Real sensor data execution complete!';
+      
+      outputElement.textContent = output;
+      statusIndicator.className = 'status-indicator status-ready';
+    })
+    .catch(error => {
+      const errorOutput = `❌ Failed to fetch DS18B20 data:\n${error.message}`;
+      outputElement.textContent = errorOutput;
+      statusIndicator.className = 'status-indicator status-error';
+    });
 }
+
 
 // Initialize everything
 function initializeEverything() {

@@ -182,7 +182,7 @@
 <body>
 
 <div class="container">
-  <h1>🌊 Digital Water Sensor - Blockly Generator</h1>
+  <h1>🌊 Digital Water Sensor</h1>
   <p class="subtitle">Visual programming for Raspberry Pi water level monitoring</p>
 
   <!-- Toolbox -->
@@ -526,69 +526,36 @@ function setupCustomBlocks() {
 function simulateWaterSensor(code) {
   const outputElement = document.getElementById('executionOutput');
   const statusIndicator = document.getElementById('statusIndicator');
-  
-  // Set status to running
+
   statusIndicator.className = 'status-indicator status-running';
-  simulationRunning = true;
-  
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      try {
-        let output = '';
-        let step = 0;
-        
-        output += '🚀 Starting water sensor simulation...\n\n';
-        
-        function simulateStep() {
-          if (!simulationRunning) {
-            statusIndicator.className = 'status-indicator status-ready';
-            resolve();
-            return;
-          }
-          
-          step++;
-          
-          // Simulate random water detection
-          const waterDetected = Math.random() > 0.6; // 40% chance of water detection
-          const timestamp = new Date().toLocaleTimeString();
-          
-          if (waterDetected) {
-            output += `[${timestamp}] 💧 Water detected!\n`;
-          } else {
-            output += `[${timestamp}] ⚠️ No water detected.\n`;
-          }
-          
-          // Add some analysis every 5 steps
-          if (step % 5 === 0) {
-            output += `\n📊 Completed ${step} sensor readings...\n`;
-          }
-          
-          outputElement.textContent = output + '\n⏳ Monitoring... (simulation will run for 10 readings)';
-          
-          if (step < 10) {
-            setTimeout(simulateStep, 1000); // 1 second delay
-          } else {
-            output += '\n🎉 Simulation completed!\n';
-            output += '💡 In real hardware, this would run continuously until CTRL+C is pressed.\n';
-            outputElement.textContent = output;
-            statusIndicator.className = 'status-indicator status-ready';
-            simulationRunning = false;
-            resolve(output);
-          }
-        }
-        
-        simulateStep();
-        
-      } catch (error) {
-        statusIndicator.className = 'status-indicator status-error';
-        const errorOutput = `❌ Error during simulation:\n${error.message}\n\nNote: This is a simulation of the water sensor code.\nActual hardware interaction requires a real water sensor connected to GPIO pin 17.`;
-        outputElement.textContent = errorOutput;
-        simulationRunning = false;
-        resolve(errorOutput);
+  outputElement.textContent = '📡 Checking real water sensor status...\n';
+
+  fetch('/api/water_sensor/live')
+    .then(response => response.json())
+    .then(data => {
+      const timestamp = data.timestamp || new Date().toLocaleTimeString();
+      const detected = data.water_detected;
+
+      let output = '';
+      output += `🟢 Water sensor check initiated at ${timestamp}\n`;
+
+      if (detected) {
+        output += `💧 Water detected on GPIO17!\n`;
+      } else {
+        output += `⚠️ No water detected on GPIO17.\n`;
       }
-    }, 100);
-  });
+
+      output += '\n🎉 Real-time sensor check complete!';
+      outputElement.textContent = output;
+      statusIndicator.className = 'status-indicator status-ready';
+    })
+    .catch(error => {
+      const errorOutput = `❌ Failed to fetch water sensor data:\n${error.message}`;
+      outputElement.textContent = errorOutput;
+      statusIndicator.className = 'status-indicator status-error';
+    });
 }
+
 
 // Initialize everything
 function initializeEverything() {
