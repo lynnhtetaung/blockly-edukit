@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, jsonify
-from routes.sensors import sensors_bp
-from routes.semar import semar_bp
-from routes.view import view_bp
-from routes.arduino import arduino_bp
+from routes.sensors_api_route import sensors_bp
+from routes.semar_api_route import semar_bp
+from routes.views_route import view_bp
+from routes.arduino_api_route import arduino_bp
 
 app = Flask(__name__)
 

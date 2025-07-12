@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify
-import time
 import board
 import adafruit_dht
 import glob
 import RPi.GPIO as GPIO
+from datetime import datetime, time, timezone
 
 sensors_bp = Blueprint('scenario1', __name__)
 
@@ -12,7 +12,7 @@ def get_live_dht22():
     try:
         dhtDevice = adafruit_dht.DHT22(board.D13, use_pulseio=False)
         temperature = dhtDevice.temperature
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+        timestamp = datetime.now(timezone.utc).isoformat(),
         return jsonify({"dht22_temp": temperature, "timestamp": timestamp})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -29,18 +29,24 @@ def get_live_ds18b20():
             raise Exception('CRC check failed')
         temp_str = lines[1].split('t=')[-1]
         temp_c = round(float(temp_str) / 1000.0, 2)
-        return jsonify({"ds18b20_temp": temp_c, "timestamp": time.strftime('%Y-%m-%d %H:%M:%S')})
+        return jsonify({"ds18b20_temp": temp_c, "timestamp": datetime.now(timezone.utc).isoformat(),})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @sensors_bp.route('/api/water_sensor/live')
 def get_live_water_sensor():
     try:
-        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
-        sensor_pin = 17
-        GPIO.setup(sensor_pin, GPIO.IN)
-        water_detected = GPIO.input(sensor_pin) == GPIO.LOW
-        return jsonify({"water_detected": water_detected, "timestamp": time.strftime('%Y-%m-%d %H:%M:%S')})
+        WATER_SENSOR_PIN = 17
+        GPIO.setup(WATER_SENSOR_PIN, GPIO.IN)
+        while True:
+            if GPIO.input(WATER_SENSOR_PIN) == GPIO.LOW:
+                water_detected = "Water detected!"
+                print("💧 Water detected!")
+            else:
+                water_detected = "No water detected."
+                print("⚠️ No water detected.")
+                time.sleep(1)
+            return jsonify({"water_detected": water_detected, "timestamp": datetime.now(timezone.utc).isoformat(),})
     except Exception as e:
         return jsonify({"error": str(e)}), 500

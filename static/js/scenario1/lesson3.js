@@ -237,7 +237,7 @@ function setupCustomBlocks() {
 }
 
 // Water sensor simulation
-function simulateWaterSensor(code) {
+function simulatePythonExecution(code) {
     const outputElement = document.getElementById('executionOutput');
     const statusIndicator = document.getElementById('statusIndicator');
 
@@ -354,7 +354,7 @@ async function runCode() {
         return;
     }
 
-    document.getElementById('executionOutput').textContent = '🚀 Starting water sensor simulation...\n\nNote: This simulates the water sensor behavior since we cannot access real GPIO pins in a browser.';
+    document.getElementById('executionOutput').textContent = '🚀 Starting water sensor simulation...\n\nNote: This simulates water sensor behavior since we cannot access real GPIO pins in a browser.';
     document.getElementById('sendBtn').style.display = "none";
 
     const result = await simulatePythonExecution(currentCode);
