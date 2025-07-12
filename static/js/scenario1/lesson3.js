@@ -374,8 +374,8 @@ async function runCode() {
 function clearWorkspace() {
     if (workspace) {
         workspace.clear();
-        document.getElementById('output').textContent = 'Click "Generate Python Code" to see the result...';
-        document.getElementById('executionOutput').textContent = 'Click "Run Simulation" to test the generated code...';
+        document.getElementById('output').textContent = 'Click "Generate Python Code" to generate the python code';
+        document.getElementById('executionOutput').textContent = 'Click "Execute" to see the sensor data output';
         document.getElementById('statusIndicator').className = 'status-indicator status-ready';
         currentCode = '';
         simulationRunning = false;

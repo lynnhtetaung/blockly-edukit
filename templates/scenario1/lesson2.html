@@ -24,7 +24,7 @@
 
     <!-- Toolbox -->
     <xml id="toolbox" style="display: none">
-      <category name="📥 Import Modules" colour="230">
+      <category name="📦 Import Modules" colour="230">
         <block type="import_glob"></block>
         <block type="import_time"></block>
       </category>
@@ -53,22 +53,22 @@
     <div class="button-container">
       <button onclick="generateCode()">🐍 Generate Python Code</button>
       <button onclick="clearWorkspace()" class="clear-btn">🗑️ Clear </button>
-      <button onclick="runCode()" class="run-btn">▶️ Run</button>
+      <button onclick="runCode()" class="run-btn">▶️ Execute</button>
     </div>
 
     <div class="output-container">
       <div class="output-section">
         <h3>🐍 Generated Python Code:</h3>
-        <pre id="output">Click "Generate Python Code" to see the result...</pre>
+        <pre id="output">Click "Generate Python Code" to generate the python code</pre>
       </div>
       <div class="output-section">
         <h3><span class="status-indicator status-ready" id="statusIndicator"></span>🖥️ Execution Output:</h3>
         <pre id="executionOutput"
-          class="execution-output">Click "Run Code" to execute the generated Python code...</pre>
+          class="execution-output">Click "Execute" to see the sensor data output</pre>
       </div>
     </div>
 
-    <button id="sendBtn" onclick="callSemarAPI('ds18b20')" class="test-btn" style="display:none;">🌡️ Send DS18B20</button>
+    <button id="sendBtn" onclick="callSemarAPI('ds18b20')" class="test-btn" style="display:none;">📡Send to SEMAR</button>
 
   </div>
 

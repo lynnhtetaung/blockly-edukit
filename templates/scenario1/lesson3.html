@@ -50,21 +50,21 @@
     <div class="button-container">
       <button onclick="generateCode()">🐍 Generate Python Code</button>
       <button onclick="clearWorkspace()" class="clear-btn">🗑️ Clear Workspace</button>
-      <button onclick="runCode()" class="run-btn">▶️ Run </button>
+      <button onclick="runCode()" class="run-btn">▶️ Execute </button>
     </div>
 
     <div class="output-container">
       <div class="output-section">
         <h3>🐍 Generated Python Code:</h3>
-        <pre id="output">Click "Generate Python Code" to see the result...</pre>
+        <pre id="output">Click "Generate Python Code" to generate the python code</pre>
       </div>
       <div class="output-section">
-        <h3><span class="status-indicator status-ready" id="statusIndicator"></span>🖥️ Simulation Output:</h3>
-        <pre id="executionOutput" class="execution-output">Click "Run Simulation" to test the generated code...</pre>
+        <h3><span class="status-indicator status-ready" id="statusIndicator"></span>🖥️ Execution Output:</h3>
+        <pre id="executionOutput" class="execution-output">Click "Execute" to see the sensor data output</pre>
       </div>
     </div>
 
-    <button id="sendBtn" onclick="callSemarAPI('water')" class="test-btn" style="display:none;">💧 Send Water Sensor</button>
+    <button id="sendBtn" onclick="callSemarAPI('water')" class="test-btn" style="display:none;">📡Send to SEMAR</button>
 
   </div>
 

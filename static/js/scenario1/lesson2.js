@@ -176,7 +176,7 @@ function setupCustomBlocks() {
         // Print temperature
         Blockly.Blocks['print_temperature'] = {
             init: function () {
-                this.appendDummyInput().appendField('    print(f"Temperature: {temp:.2f}°C")');
+                this.appendDummyInput().appendField('    print(f"Water Temperature: {temp:.2f}°C")');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setColour(65);
@@ -185,7 +185,7 @@ function setupCustomBlocks() {
         };
 
         Blockly.Python['print_temperature'] = function (block) {
-            return '    print(f"Temperature: {temp:.2f}°C")\n';
+            return '    print(f"Water Temperature: {temp:.2f}°C")\n';
         };
 
         // Sleep delay
@@ -253,7 +253,7 @@ function setupCustomBlocks() {
                 };
 
                 Blockly.Python.forBlock['print_temperature'] = function (block) {
-                    return '    print(f"Temperature: {temp:.2f}°C")\n';
+                    return '    print(f" Water Temperature: {temp:.2f}°C")\n';
                 };
 
                 Blockly.Python.forBlock['sleep_delay'] = function (block) {
@@ -424,7 +424,7 @@ function loadExample() {
 function clearWorkspace() {
     if (workspace) {
         workspace.clear();
-        document.getElementById('output').textContent = 'Click "Generate Python Code" to see the result...';
+        document.getElementById('output').textContent = 'Click "Generate Python Code" to generate the python code';
         document.getElementById('executionOutput').textContent = 'Click "Simulate Execution" to run the generated Python code...';
         document.getElementById('statusIndicator').className = 'status-indicator status-ready';
         currentCode = '';

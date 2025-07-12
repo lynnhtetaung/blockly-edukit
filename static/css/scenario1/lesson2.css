@@ -116,7 +116,7 @@ button:hover {
 }
 
 .run-btn {
-    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+    background: linear-gradient(135deg, #38a169 0%, #38a169 100%);
     box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);
 }
 
@@ -228,18 +228,4 @@ h1 {
 .sensor-info p {
     margin: 5px 0;
     color: #4a5568;
-}
-
-.method-indicator {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(102, 126, 234, 0.9);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    z-index: 1000;
-    backdrop-filter: blur(5px);
 }

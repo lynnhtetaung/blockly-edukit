@@ -72,7 +72,7 @@ function setupCustomBlocks() {
         // Print temperature
         Blockly.Blocks['print_temperature_dht'] = {
             init: function () {
-                this.appendDummyInput().appendField('print(f"Temperature: {temperature_c:.1f}°C")');
+                this.appendDummyInput().appendField('print(f"Room Temperature: {temperature_c:.1f}°C")');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setColour(120);
@@ -81,7 +81,7 @@ function setupCustomBlocks() {
         };
 
         Blockly.Python['print_temperature_dht'] = function (block) {
-            return 'print(f"Temperature: {temperature_c:.1f}°C")\n';
+            return 'print(f"Room Temperature: {temperature_c:.1f}°C")\n';
         };
 
         console.log('Custom blocks setup complete');
@@ -111,7 +111,7 @@ function setupCustomBlocks() {
             };
 
             Blockly.Python.forBlock['print_temperature_dht'] = function (block) {
-                return 'print(f"Temperature: {temperature_c:.1f}°C")\n';
+                return 'print(f"Room Temperature: {temperature_c:.1f}°C")\n';
             };
 
             console.log('forBlock generators setup complete');
@@ -155,7 +155,7 @@ function simulatePythonExecution(code) {
                                 output += `✓ ${line}\n`;
                                 output += `  └─ Reading sensor... Temperature: ${temperature}°C\n`;
                                 window.simulatedTemperature = temperature;
-                            } else if (line.includes('print(f"Temperature:')) {
+                            } else if (line.includes('print(f"Room Temperature:')) {
                                 const temp = window.simulatedTemperature || 'N/A';
                                 output += `✓ ${line}\n`;
                                 output += `📊 Temperature: ${temp}°C\n`;
@@ -316,8 +316,8 @@ async function runCode() {
 function clearWorkspace() {
     if (workspace) {
         workspace.clear();
-        document.getElementById('output').textContent = 'Click "Generate Python Code" to see the result...';
-        document.getElementById('executionOutput').textContent = 'Click "Run Code" to execute the generated Python code...';
+        document.getElementById('output').textContent = 'Click "Generate Python Code" to generate the python code';
+        document.getElementById('executionOutput').textContent = 'Click "Execute" to see the sensor data output';
         document.getElementById('statusIndicator').className = 'status-indicator status-ready';
         currentCode = '';
     }
