@@ -12,5 +12,5 @@ def read_temp():
 
 while True:
     temp = read_temp()
-    print(f"Temperature: {temp:.2f}°C")
+    print(f"Water Temperature: {temp:.2f}°C")
     time.sleep(1)

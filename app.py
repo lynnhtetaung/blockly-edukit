@@ -1,14 +1,13 @@
-from flask import Flask, render_template, request, jsonify
-import csv
-import time
 import os
-import board
-import adafruit_dht
+import csv
 import glob
+import time
+import board
+import requests
+import adafruit_dht
 import RPi.GPIO as GPIO
 from datetime import datetime, timezone
-import requests
-
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
