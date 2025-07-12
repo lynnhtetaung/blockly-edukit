@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+import os
 
 view_bp = Blueprint('view', __name__)
 
@@ -53,3 +54,11 @@ def scenario3_lesson2():
 @view_bp.route('/scenario3_lesson3')
 def scenario3_lesson3():
     return render_template('scenario3/lesson3.html')
+
+@view_bp.route('/user-guide')
+def user_guide():
+    user_guide_path = os.path.join('templates', 'scenario1', 'user-guide.txt')
+    # Option 1: Render as plain text in browser
+    with open(user_guide_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    return render_template('user_guide.html', content=content)

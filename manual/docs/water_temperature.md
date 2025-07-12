@@ -29,7 +29,7 @@ You need to enable the 1-Wire interface in your Raspberry Pi's configuration.
 1.  Open the configuration file:
 
     ```bash
-    sudo nano /boot/config.txt
+    sudo nano /boot/firmware/config.txt
     ```
 
 2.  Add the following line at the end of the file (if it's not already there):

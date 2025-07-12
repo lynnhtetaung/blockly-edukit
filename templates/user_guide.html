@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Guide</title>
+    <link rel="stylesheet" href="/static/css/scenario1-home.css">
+    <style>
+        .user-guide-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+        .user-guide-content {
+            white-space: pre-wrap;
+            font-family: 'Fira Mono', 'Consolas', monospace;
+            font-size: 1.1rem;
+            color: #222;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-guide-container">
+        <a href="/" class="back-link">&larr; Back to Home</a>
+        <h2>User Guide</h2>
+        <div class="user-guide-content">{{ content }}</div>
+    </div>
+</body>
+</html>
