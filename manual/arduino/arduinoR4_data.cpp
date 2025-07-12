@@ -62,7 +62,7 @@ void loop() {
   if (client.connect(serverIP, serverPort)) {
     Serial.println("🌐 Connected to RPi Flask Server");
     
-    client.println("POST /api/sensor HTTP/1.1");
+    client.println("POST /api/raspberry/sensor HTTP/1.1");
     client.println("Host: " + String(serverIP));
     client.println("Content-Type: application/json");
     client.print("Content-Length: ");
