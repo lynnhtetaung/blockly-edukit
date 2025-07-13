@@ -1,5 +1,3 @@
-
-
 let workspace;
 let currentCode = '';
 
@@ -142,6 +140,11 @@ function simulatePythonExecution(code) {
 
                     let currentStep = 0;
 
+                    function isValidTemp(temp) {
+                        if (typeof temp === 'string') temp = temp.trim();
+                        return temp !== undefined && temp !== null && temp !== 'N/A' && temp !== '' && !isNaN(Number(temp));
+                    }
+
                     function executeStep() {
                         if (currentStep < lines.length) {
                             const line = lines[currentStep].trim();
@@ -176,7 +179,11 @@ function simulatePythonExecution(code) {
                             setTimeout(executeStep, 300);
                         } else {
                             output += `\n🕒 Timestamp: ${timestamp}\n`;
-                            output += '\n🎉 Execution completed successfully!';
+                            if (isValidTemp(temperature)) {
+                                output += '\n🎉 Execution completed successfully!';
+                            } else {
+                                output += '\n❌ No data read. Please connect the sensor to the hardware.';
+                            }
                             outputElement.textContent = output;
                             statusIndicator.className = 'status-indicator status-ready';
                             resolve(output);
@@ -301,12 +308,11 @@ async function runCode() {
     
     const result = await simulatePythonExecution(currentCode);
 
-    // Show the button only if result contains a success indicator
-    if (
-        typeof result === "string" &&
-        result.toLowerCase().includes('temperature') &&
-        !result.toLowerCase().includes('error')
-    ) {
+    // Check if the simulated temperature is a valid number
+    let temp = window.simulatedTemperature;
+    if (typeof temp === 'string') temp = temp.trim();
+    const isValidTemp = temp !== undefined && temp !== null && temp !== 'N/A' && temp !== '' && !isNaN(Number(temp));
+    if (isValidTemp) {
         document.getElementById('sendBtn').style.display = "inline-block";
     } else {
         document.getElementById('sendBtn').style.display = "none";

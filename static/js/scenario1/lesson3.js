@@ -242,31 +242,37 @@ function simulatePythonExecution(code) {
     const statusIndicator = document.getElementById('statusIndicator');
 
     statusIndicator.className = 'status-indicator status-running';
-    outputElement.textContent = '📡 Checking real water sensor status...\n';
+    outputElement.textContent = '\uD83D\uDCE1 Checking real water sensor status...\n';
 
-    fetch('/api/water_sensor/live')
+    return fetch('/api/water_sensor/live')
         .then(response => response.json())
         .then(data => {
             const timestamp = data.timestamp || new Date().toLocaleTimeString();
             const detected = data.water_detected;
+            window.simulatedWaterDetected = detected;
 
             let output = '';
-            output += `🟢 Water sensor check initiated at ${timestamp}\n`;
+            output += `\uD83D\uDFE2 Water sensor check initiated at ${timestamp}\n`;
 
-            if (detected) {
-                output += `💧 Water detected on GPIO17!\n`;
+            if (detected === true) {
+                output += `\uD83D\uDCA7 Water detected on GPIO17!\n`;
+                output += '\n\uD83C\uDF89 Real-time sensor check complete!';
+            } else if (detected === false) {
+                output += `\u26A0\uFE0F No water detected on GPIO17.\n`;
+                output += '\n\u274C No data read. Please connect the sensor to the hardware.';
             } else {
-                output += `⚠️ No water detected on GPIO17.\n`;
+                output += '\n\u274C No data read. Please connect the sensor to the hardware.';
             }
 
-            output += '\n🎉 Real-time sensor check complete!';
             outputElement.textContent = output;
             statusIndicator.className = 'status-indicator status-ready';
+            return output;
         })
         .catch(error => {
-            const errorOutput = `❌ Failed to fetch water sensor data:\n${error.message}`;
+            const errorOutput = `\u274c Failed to fetch water sensor data:\n${error.message}`;
             outputElement.textContent = errorOutput;
             statusIndicator.className = 'status-indicator status-error';
+            return errorOutput;
         });
 }
 
@@ -340,31 +346,26 @@ function generateCode() {
 
 async function runCode() {
     if (!currentCode || currentCode.trim() === '') {
-        document.getElementById('executionOutput').textContent = '❌ No code to run!\nGenerate Python code first by clicking "Generate Python Code".';
+        document.getElementById('executionOutput').textContent = '\u274c No code to run!\nGenerate Python code first by clicking "Generate Python Code".';
         document.getElementById('sendBtn').style.display = "none";
         return;
     }
 
     if (simulationRunning) {
         simulationRunning = false;
-        document.getElementById('executionOutput').textContent = '⏹️ Simulation stopped by user.';
+        document.getElementById('executionOutput').textContent = '\u23f9\uFE0F Simulation stopped by user.';
         document.getElementById('sendBtn').style.display = "none";
-
         document.getElementById('statusIndicator').className = 'status-indicator status-ready';
         return;
     }
 
-    document.getElementById('executionOutput').textContent = '🚀 Starting water sensor simulation...\n\nNote: This simulates water sensor behavior since we cannot access real GPIO pins in a browser.';
+    document.getElementById('executionOutput').textContent = '\uD83D\uDE80 Starting water sensor simulation...\n\nNote: This simulates water sensor behavior since we cannot access real GPIO pins in a browser.';
     document.getElementById('sendBtn').style.display = "none";
 
     const result = await simulatePythonExecution(currentCode);
 
-    // Show the button only if result contains a success indicator
-    if (
-        typeof result === "string" &&
-        result.toLowerCase().includes('temperature') &&
-        !result.toLowerCase().includes('error')
-    ) {
+    // Show the button only if water is detected (true)
+    if (window.simulatedWaterDetected === true) {
         document.getElementById('sendBtn').style.display = "inline-block";
     } else {
         document.getElementById('sendBtn').style.display = "none";

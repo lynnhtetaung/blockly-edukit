@@ -279,36 +279,42 @@ function simulatePythonExecution(code) {
     const statusIndicator = document.getElementById('statusIndicator');
 
     statusIndicator.className = 'status-indicator status-running';
-    outputElement.textContent = '📡 Fetching real DS18B20 temperature data...\n';
+    outputElement.textContent = '\uD83D\uDCE1 Fetching real DS18B20 temperature data...\n';
 
-    fetch('/api/ds18b20/live')
+    return fetch('/api/ds18b20/live')
         .then(response => response.json())
         .then(sensorData => {
             const temperature = sensorData.ds18b20_temp?.toFixed(2) || 'N/A';
             const timestamp = sensorData.timestamp || 'Unknown';
+            window.simulatedTemperature = temperature;
 
             let output = '';
-            output += `✅ import os\n`;
-            output += `✅ import glob\n`;
-            output += `✅ import time\n`;
-            output += `✅ base_dir = '/sys/bus/w1/devices/'\n`;
-            output += `✅ device_folder = glob.glob(base_dir + '28*')[0]\n`;
-            output += `✅ device_file = device_folder + '/w1_slave'\n`;
-            output += `✅ def read_temp():\n`;
-            output += `  └─ 🔧 Defined function to read DS18B20 temperature\n`;
-            output += `✅ temp = read_temp()\n`;
-            output += `  └─ 📊 Temperature reading: ${temperature}°C\n`;
-            output += `📺 Temperature: ${temperature}°C\n`;
-            output += `🕒 Timestamp: ${timestamp}\n`;
-            output += '\n🎉 Real sensor data execution complete!';
-
+            output += `\u2705 import os\n`;
+            output += `\u2705 import glob\n`;
+            output += `\u2705 import time\n`;
+            output += `\u2705 base_dir = '/sys/bus/w1/devices/'\n`;
+            output += `\u2705 device_folder = glob.glob(base_dir + '28*')[0]\n`;
+            output += `\u2705 device_file = device_folder + '/w1_slave'\n`;
+            output += `\u2705 def read_temp():\n`;
+            output += `  \u2514\u2500 \uD83D\uDD27 Defined function to read DS18B20 temperature\n`;
+            output += `\u2705 temp = read_temp()\n`;
+            output += `  \u2514\u2500 \uD83D\uDCCA Temperature reading: ${temperature}\u00b0C\n`;
+            output += `\uD83D\uDCFA Temperature: ${temperature}\u00b0C\n`;
+            output += `\uD83D\uDD52 Timestamp: ${timestamp}\n`;
+            if (typeof temperature === 'string' && temperature !== 'N/A' && temperature !== '' && !isNaN(Number(temperature))) {
+                output += '\n\uD83C\uDF89 Real sensor data execution complete!';
+            } else {
+                output += '\n\u274C No data read. Please connect the sensor to the hardware.';
+            }
             outputElement.textContent = output;
             statusIndicator.className = 'status-indicator status-ready';
+            return output;
         })
         .catch(error => {
-            const errorOutput = `❌ Failed to fetch DS18B20 data:\n${error.message}`;
+            const errorOutput = `\u274c Failed to fetch DS18B20 data:\n${error.message}`;
             outputElement.textContent = errorOutput;
             statusIndicator.className = 'status-indicator status-error';
+            return errorOutput;
         });
 }
 
@@ -380,22 +386,21 @@ function generateCode() {
 
 async function runCode() {
     if (!currentCode || currentCode.trim() === '') {
-        document.getElementById('executionOutput').textContent = '❌ No code to run!\nGenerate Python code first by clicking "Generate Python Code".';
+        document.getElementById('executionOutput').textContent = '\u274c No code to run!\nGenerate Python code first by clicking "Generate Python Code".';
         document.getElementById('sendBtn').style.display = "none";
         return;
     }
 
-    document.getElementById('executionOutput').textContent = '🚀 Starting DS18B20 code simulation...\n\n📝 Note: This simulates DS18B20 sensor readings since we cannot access actual hardware in a browser environment.';
+    document.getElementById('executionOutput').textContent = '\uD83D\uDE80 Starting DS18B20 code simulation...\n\n\uD83D\uDCDD Note: This simulates DS18B20 sensor readings since we cannot access actual hardware in a browser environment.';
     document.getElementById('sendBtn').style.display = "none";
 
     const result = await simulatePythonExecution(currentCode);
 
-    // Show the button only if result contains a success indicator
-    if (
-        typeof result === "string" &&
-        result.toLowerCase().includes('temperature') &&
-        !result.toLowerCase().includes('error')
-    ) {
+    // Show the button only if the simulated temperature is valid
+    let temp = window.simulatedTemperature;
+    if (typeof temp === 'string') temp = temp.trim();
+    const isValidTemp = temp !== undefined && temp !== null && temp !== 'N/A' && temp !== '' && !isNaN(Number(temp));
+    if (isValidTemp) {
         document.getElementById('sendBtn').style.display = "inline-block";
     } else {
         document.getElementById('sendBtn').style.display = "none";

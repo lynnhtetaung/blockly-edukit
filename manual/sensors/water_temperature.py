@@ -1,13 +1,7 @@
 import glob
 import time
-import sys
 
-device_files = glob.glob('/sys/bus/w1/devices/28*/w1_slave')
-if not device_files:
-    print("No DS18B20 sensor found! Check wiring and 1-Wire config.")
-    sys.exit(1)
-
-device_file = device_files[0]
+device_file = glob.glob('/sys/bus/w1/devices/28*/w1_slave')[0]
 
 def read_temp():
     with open(device_file, 'r') as f:
@@ -18,5 +12,5 @@ def read_temp():
 
 while True:
     temp = read_temp()
-    print(f"Water Temperature: {temp:.2f}°C")
+    print(f"Temperature: {temp:.2f}°C")
     time.sleep(1)
