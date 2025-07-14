@@ -82,27 +82,10 @@ function setupCustomBlocks() {
             return 'GPIO.setup(WATER_SENSOR_PIN, GPIO.IN)\n';
         };
 
-        // Infinite loop (while True)
-        Blockly.Blocks['infinite_loop'] = {
-            init: function () {
-                this.appendDummyInput().appendField("while True:");
-                this.appendStatementInput("DO").setCheck(null);
-                this.setPreviousStatement(true, null);
-                this.setColour(290);
-                this.setTooltip("Infinite loop - runs forever");
-            }
-        };
-
-        Blockly.Python['infinite_loop'] = function (block) {
-            var statements_do = Blockly.Python.statementToCode(block, 'DO');
-            var code = 'while True:\n' + statements_do;
-            return code;
-        };
-
         // Water detected condition
         Blockly.Blocks['water_detected_condition'] = {
             init: function () {
-                this.appendDummyInput().appendField("if GPIO.input(WATER_SENSOR_PIN) == GPIO.LOW:");
+                this.appendDummyInput().appendField("if GPIO.input(WATER_SENSOR_PIN) == GPIO.HIGH:");
                 this.appendStatementInput("IF_TRUE").setCheck(null);
                 this.appendDummyInput().appendField("else:");
                 this.appendStatementInput("IF_FALSE").setCheck(null);
@@ -116,7 +99,7 @@ function setupCustomBlocks() {
         Blockly.Python['water_detected_condition'] = function (block) {
             var statements_if_true = Blockly.Python.statementToCode(block, 'IF_TRUE');
             var statements_if_false = Blockly.Python.statementToCode(block, 'IF_FALSE');
-            var code = 'if GPIO.input(WATER_SENSOR_PIN) == GPIO.LOW:\n' +
+            var code = 'if GPIO.input(WATER_SENSOR_PIN) == GPIO.HIGH:\n' +
                 statements_if_true +
                 'else:\n' +
                 statements_if_false;
@@ -197,16 +180,10 @@ function setupCustomBlocks() {
                 return 'GPIO.setup(WATER_SENSOR_PIN, GPIO.IN)\n';
             };
 
-            Blockly.Python.forBlock['infinite_loop'] = function (block) {
-                var statements_do = Blockly.Python.statementToCode(block, 'DO');
-                var code = 'while True:\n' + statements_do;
-                return code;
-            };
-
             Blockly.Python.forBlock['water_detected_condition'] = function (block) {
                 var statements_if_true = Blockly.Python.statementToCode(block, 'IF_TRUE');
                 var statements_if_false = Blockly.Python.statementToCode(block, 'IF_FALSE');
-                var code = 'if GPIO.input(WATER_SENSOR_PIN) == GPIO.LOW:\n' +
+                var code = 'if GPIO.input(WATER_SENSOR_PIN) == GPIO.HIGH:\n' +
                     statements_if_true +
                     'else:\n' +
                     statements_if_false;
@@ -247,32 +224,81 @@ function simulatePythonExecution(code) {
     return fetch('/api/water_sensor/live')
         .then(response => response.json())
         .then(data => {
-            const timestamp = data.timestamp || new Date().toLocaleTimeString();
-            const detected = data.water_detected;
-            window.simulatedWaterDetected = detected;
+            return new Promise((resolve) => {
+                try {
+                    let output = '';
+                    const lines = code.split('\n').filter(line => line.trim() !== '');
+                    const detected = data.water_detected;
+                    const timestamp = data.timestamp || new Date().toLocaleTimeString();
+                    window.simulatedWaterDetected = detected;
 
-            let output = '';
-            output += `\uD83D\uDFE2 Water sensor check initiated at ${timestamp}\n`;
+                    let currentStep = 0;
 
-            if (detected === true) {
-                output += `\uD83D\uDCA7 Water detected on GPIO17!\n`;
-                output += '\n\uD83C\uDF89 Real-time sensor check complete!';
-            } else if (detected === false) {
-                output += `\u26A0\uFE0F No water detected on GPIO17.\n`;
-                output += '\n\u274C No data read. Please connect the sensor to the hardware.';
-            } else {
-                output += '\n\u274C No data read. Please connect the sensor to the hardware.';
-            }
+                    function executeStep() {
+                        if (currentStep < lines.length) {
+                            const line = lines[currentStep].trim();
+                            if (line.startsWith('import ')) {
+                                output += `✓ ${line}\n`;
+                            } else if (line.includes('GPIO.setmode')) {
+                                output += `✓ ${line}\n`;
+                                output += `  └─ GPIO set to BCM mode\n`;
+                            } else if (line.includes('WATER_SENSOR_PIN')) {
+                                output += `✓ ${line}\n`;
+                                output += `  └─ Water sensor pin set to GPIO17\n`;
+                            } else if (line.includes('GPIO.setup')) {
+                                output += `✓ ${line}\n`;
+                                output += `  └─ Pin configured as input\n`;
+                            } else if (line.includes('GPIO.input(WATER_SENSOR_PIN)')) {
+                                output += `✓ ${line}\n`;
+                                if (detected === true) {
+                                    output += `  └─ Reading sensor... Water detected!\n`;
+                                } else if (detected === false) {
+                                    output += `  └─ Reading sensor... No water detected.\n`;
+                                } else {
+                                    output += `  └─ Reading sensor... Unknown state.\n`;
+                                }
+                            } else if (line.startsWith('print(')) {
+                                const match = line.match(/print\(['"](.+?)['"]\)/);
+                                if (match) {
+                                    output += `✓ ${line}\n`;
+                                    output += `📝 ${match[1]}\n`;
+                                } else {
+                                    output += `✓ ${line}\n`;
+                                }
+                            } else if (line !== '') {
+                                output += `✓ ${line}\n`;
+                            }
 
-            outputElement.textContent = output;
-            statusIndicator.className = 'status-indicator status-ready';
-            return output;
+                            outputElement.textContent = output + '\n⏳ Executing...';
+                            currentStep++;
+                            setTimeout(executeStep, 300);
+                        } else {
+                            output += `\n🕒 Timestamp: ${timestamp}\n`;
+                            if (detected === true || detected === false) {
+                                output += '\n🎉 Execution completed successfully!';
+                            } else {
+                                output += '\n❌ No data read. Please connect the sensor to the hardware.';
+                            }
+                            outputElement.textContent = output;
+                            statusIndicator.className = 'status-indicator status-ready';
+                            resolve(output);
+                        }
+                    }
+
+                    executeStep();
+                } catch (error) {
+                    statusIndicator.className = 'status-indicator status-error';
+                    const errorOutput = `❌ Error during execution:\n${error.message}\n\nNote: This is a simulation of Python code execution.\nActual hardware interaction would require a real water sensor.`;
+                    outputElement.textContent = errorOutput;
+                    resolve(errorOutput);
+                }
+            });
         })
         .catch(error => {
+            statusIndicator.className = 'status-indicator status-error';
             const errorOutput = `\u274c Failed to fetch water sensor data:\n${error.message}`;
             outputElement.textContent = errorOutput;
-            statusIndicator.className = 'status-indicator status-error';
-            return errorOutput;
+            return Promise.resolve(errorOutput);
         });
 }
 
@@ -364,7 +390,7 @@ async function runCode() {
 
     const result = await simulatePythonExecution(currentCode);
 
-    // Show the button only if water is detected (true)
+    // Only show the button if water is detected (strict true)
     if (window.simulatedWaterDetected === true) {
         document.getElementById('sendBtn').style.display = "inline-block";
     } else {
@@ -383,23 +409,87 @@ function clearWorkspace() {
     }
 }
 
-function callSemarAPI(sensorType) {
-    const endpoint = `/api/semar/${sensorType}`;
+function showSemarModal(status, message) {
+    const modal = document.getElementById('semarModal');
+    const statusDiv = document.getElementById('semarModalStatus');
+    const closeBtn = document.getElementById('semarModalClose');
+    modal.style.display = 'flex';
+    statusDiv.innerHTML = `
+      <div class="semar-modal-spinner"></div>
+      <div class="semar-modal-message">${message || 'Sending data to SEMAR...'}</div>
+    `;
+    closeBtn.style.display = 'none';
+}
 
+function updateSemarModalSuccess(response) {
+    const statusDiv = document.getElementById('semarModalStatus');
+    // Accept 2xx as success, otherwise treat as error
+    let status = response.status;
+    if (typeof status === 'string') status = parseInt(status);
+    if (status >= 200 && status < 300) {
+        statusDiv.innerHTML = `
+          <div class="semar-modal-success">🎉</div>
+          <div class="semar-modal-message">Sensor data sent successfully!</div>
+          <div style="color:#27ae60; font-size:1rem; margin-bottom:0.5rem;">Status: ${response.status}</div>
+          <div style="color:#2c3e50; font-size:0.95rem;">${response.response || ''}</div>
+        `;
+    } else {
+        statusDiv.innerHTML = `
+          <div class="semar-modal-error">❌</div>
+          <div class="semar-modal-message">Failed to send sensor data.</div>
+          <div style="color:#e74c3c; font-size:1rem;">Status: ${response.status}</div>
+          <div style="color:#e74c3c; font-size:0.95rem;">${response.detail || response.response || ''}</div>
+        `;
+    }
+    document.getElementById('semarModalClose').style.display = 'block';
+}
+
+function updateSemarModalError(errorMsg) {
+    const statusDiv = document.getElementById('semarModalStatus');
+    statusDiv.innerHTML = `
+      <div class="semar-modal-error">❌</div>
+      <div class="semar-modal-message">Failed to send sensor data.</div>
+      <div style="color:#e74c3c; font-size:1rem;">${errorMsg}</div>
+    `;
+    document.getElementById('semarModalClose').style.display = 'block';
+}
+
+function hideSemarModal() {
+    document.getElementById('semarModal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const closeBtn = document.getElementById('semarModalClose');
+    if (closeBtn) {
+        closeBtn.onclick = hideSemarModal;
+    }
+    // Also close modal if user clicks outside content
+    const modal = document.getElementById('semarModal');
+    if (modal) {
+        modal.onclick = function(e) {
+            if (e.target === modal) hideSemarModal();
+        };
+    }
+});
+
+function callSemarAPI(sensorType) {
+    showSemarModal('sending', 'Sending data to SEMAR...');
+    const endpoint = `/api/semar/${sensorType}`;
     fetch(endpoint, {
         method: 'POST'
     })
-        .then(response => {
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            return response.json();
-        })
-        .then(data => {
-            alert("✅ Sensor data sent successfully!\n\n" +
-                `Status: ${data.status}\n` +
-                `Response: ${data.response}`);
+        .then(async response => {
+            let data;
+            try { data = await response.json(); } catch { data = {}; }
+            if (!response.ok) {
+                let msg = data.detail || data.response || `HTTP error! status: ${response.status}`;
+                updateSemarModalError(msg);
+                return;
+            }
+            updateSemarModalSuccess(data);
         })
         .catch(error => {
-            alert("❌ Failed to send sensor data.\n\n" + error.message);
+            updateSemarModalError(error.message);
         });
 }
 

@@ -329,23 +329,75 @@ function clearWorkspace() {
     }
 }
 
-function callSemarAPI(sensorType) {
-    const endpoint = `/api/semar/${sensorType}`;
+function showSemarModal(status, message) {
+    const modal = document.getElementById('semarModal');
+    const statusDiv = document.getElementById('semarModalStatus');
+    const closeBtn = document.getElementById('semarModalClose');
+    modal.style.display = 'flex';
+    statusDiv.innerHTML = `
+      <div class="semar-modal-spinner"></div>
+      <div class="semar-modal-message">${message || 'Sending data to SEMAR...'}</div>
+    `;
+    closeBtn.style.display = 'none';
+}
 
+function updateSemarModalSuccess(response) {
+    const statusDiv = document.getElementById('semarModalStatus');
+    statusDiv.innerHTML = `
+      <div class="semar-modal-success">🎉</div>
+      <div class="semar-modal-message">Sensor data sent successfully!</div>
+      <div style="color:#27ae60; font-size:1rem; margin-bottom:0.5rem;">Status: ${response.status}</div>
+      <div style="color:#2c3e50; font-size:0.95rem;">${response.response}</div>
+    `;
+    document.getElementById('semarModalClose').style.display = 'block';
+}
+
+function updateSemarModalError(errorMsg) {
+    const statusDiv = document.getElementById('semarModalStatus');
+    statusDiv.innerHTML = `
+      <div class="semar-modal-error">❌</div>
+      <div class="semar-modal-message">Failed to send sensor data.</div>
+      <div style="color:#e74c3c; font-size:1rem;">${errorMsg}</div>
+    `;
+    document.getElementById('semarModalClose').style.display = 'block';
+}
+
+function hideSemarModal() {
+    document.getElementById('semarModal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const closeBtn = document.getElementById('semarModalClose');
+    if (closeBtn) {
+        closeBtn.onclick = hideSemarModal;
+    }
+    // Also close modal if user clicks outside content
+    const modal = document.getElementById('semarModal');
+    if (modal) {
+        modal.onclick = function(e) {
+            if (e.target === modal) hideSemarModal();
+        };
+    }
+});
+
+function callSemarAPI(sensorType) {
+    showSemarModal('sending', 'Sending data to SEMAR...');
+    const endpoint = `/api/semar/${sensorType}`;
     fetch(endpoint, {
         method: 'POST'
     })
-        .then(response => {
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            return response.json();
-        })
-        .then(data => {
-            alert("✅ Sensor data sent successfully!\n\n" +
-                `Status: ${data.status}\n` +
-                `Response: ${data.response}`);
+        .then(async response => {
+            let data;
+            try { data = await response.json(); } catch { data = {}; }
+            if (!response.ok) {
+                let msg = data.detail || data.response || `HTTP error! status: ${response.status}`;
+                updateSemarModalError(msg);
+                return;
+            }
+            updateSemarModalSuccess(data);
         })
         .catch(error => {
-            alert("❌ Failed to send sensor data.\n\n" + error.message);
+            updateSemarModalError(error.message);
         });
 }
 

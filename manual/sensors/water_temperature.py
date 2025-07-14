@@ -12,5 +12,10 @@ def read_temp():
 
 while True:
     temp = read_temp()
-    print(f"Temperature: {temp:.2f}°C")
+    print(f"Water Temperature: {temp:.2f}°C")
     time.sleep(1)
+
+# Easy way
+# from w1thermsensor import W1ThermSensor
+# sensor = W1ThermSensor()
+# print("Water Temperature:", sensor.get_temperature())

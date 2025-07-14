@@ -39,14 +39,10 @@ def get_live_water_sensor():
         GPIO.setmode(GPIO.BCM)
         WATER_SENSOR_PIN = 17
         GPIO.setup(WATER_SENSOR_PIN, GPIO.IN)
-        while True:
-            if GPIO.input(WATER_SENSOR_PIN) == GPIO.LOW:
-                water_detected = "Water detected!"
-                print("💧 Water detected!")
-            else:
-                water_detected = "No water detected."
-                print("⚠️ No water detected.")
-                time.sleep(1)
-            return jsonify({"water_detected": water_detected, "timestamp": datetime.now(timezone.utc).isoformat(),})
+        detected = GPIO.input(WATER_SENSOR_PIN) == GPIO.HIGH
+        return jsonify({
+            "water_detected": detected,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500

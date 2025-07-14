@@ -10,10 +10,10 @@ WATER_SENSOR_PIN = 17
 # Set pin as input
 GPIO.setup(WATER_SENSOR_PIN, GPIO.IN)
 
-while True:
-    if GPIO.input(WATER_SENSOR_PIN) == GPIO.LOW:
-        print("💧 Water detected!")
-    else:
-        print("⚠️ No water detected.")
-    time.sleep(1)
+# Many digital water sensors output LOW when water is present.
+# But some do the opposite — output HIGH when wet.
+if GPIO.input(WATER_SENSOR_PIN) == GPIO.HIGH:
+    print("💧 Water detected!")
+else:
+    print("⚠️ No water detected.")
 

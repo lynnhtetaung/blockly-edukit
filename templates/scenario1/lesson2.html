@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Lesson2: DS18B20 Sensor</title>
+  <title>Lesson2: DS18B20 1-wire Sensor</title>
 
   <!-- Load Blockly Core & Dependencies -->
   <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
@@ -20,7 +20,7 @@
 
   <div class="container">
     <h1>💧 Lesson2: DS18B20 Sensor</h1>
-    <p class="subtitle"><strong>Pins:</strong> VCC (3.3V), GND, DATA D13, GPIO13)</p>
+    <p class="subtitle"><strong>Pins:</strong> VCC (3.3V), GND, DATA (GPIO4)</p>
 
     <!-- Toolbox -->
     <xml id="toolbox" style="display: none">
@@ -48,6 +48,11 @@
     </xml>
 
     <!-- Blockly Workspace -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;">
+      <div style="flex: 1;"></div>
+      <button id="sendBtn" onclick="callSemarAPI('ds18b20')" class="test-btn semar-blue-btn"
+        style="margin-right: 0.5rem; display:none;">📡Send to SEMAR</button>
+    </div>
     <div id="blocklyDiv"></div>
 
     <div class="button-container">
@@ -68,8 +73,17 @@
       </div>
     </div>
 
-    <button id="sendBtn" onclick="callSemarAPI('ds18b20')" class="test-btn" style="display:none;">📡Send to SEMAR</button>
+  </div>
 
+  <!-- SEMAR Modal (copy from lesson1 for consistency) -->
+  <div id="semarModal" class="semar-modal" style="display:none;">
+    <div class="semar-modal-content">
+      <span id="semarModalClose" class="semar-modal-close">&times;</span>
+      <div id="semarModalStatus" class="semar-modal-status">
+        <div class="semar-modal-spinner"></div>
+        <div class="semar-modal-message">Sending data to SEMAR...</div>
+      </div>
+    </div>
   </div>
 
   <!-- External JS -->

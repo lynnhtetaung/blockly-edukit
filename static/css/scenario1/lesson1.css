@@ -229,3 +229,87 @@ h1 {
     margin: 5px 0;
     color: #4a5568;
 }
+
+/* SEMAR Modal Styles */
+.semar-modal {
+    display: flex;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(44, 62, 80, 0.7);
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.semar-modal-content {
+    background: #fff;
+    border-radius: 18px;
+    padding: 2.5rem 2rem 2rem 2rem;
+    box-shadow: 0 8px 32px rgba(52, 152, 219, 0.25);
+    min-width: 320px;
+    max-width: 90vw;
+    text-align: center;
+    position: relative;
+}
+
+.semar-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 2rem;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.semar-modal-close:hover {
+    color: #e74c3c;
+}
+
+.semar-modal-spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 1.2rem auto;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.semar-modal-message {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.semar-modal-success {
+    color: #27ae60;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    animation: popIn 0.4s;
+}
+
+.semar-modal-error {
+    color: #e74c3c;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    animation: popIn 0.4s;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    80% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+}
